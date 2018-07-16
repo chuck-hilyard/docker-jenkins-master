@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 # set the initial admin password (doesn't change until jenkins is setup)
-f = open('/root/.jenkins/secrets/initialAdminPassword')
-for line in f:
-  initialAdminPassword = line.strip()
+#f = open('/root/.jenkins/secrets/initialAdminPassword')
+#for line in f:
+#  initialAdminPassword = line.strip()
 
 
 # setup the suggested and desired plugins list

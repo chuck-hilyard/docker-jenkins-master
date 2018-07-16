@@ -12,3 +12,6 @@ COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 VOLUME /var/jenkins_home
+
+RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
+RUN cd /tmp/docker-jenkins-master; ./jenkins_prep.py
