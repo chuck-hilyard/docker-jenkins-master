@@ -1,65 +1,28 @@
-Ant
-Apache HttpComponents
-Authentication Tokens
-Branch API
-Build Timeout
-Command Agent
-Credentials
-Credentials Binding
-Display URL
-Docker Commons
-Docker Pipeline
-Durable Task
-Email Extension
-Folders
-GIT server
-Git
-Git client
-GitHub
-GitHub API
-GitHub Branch
-Gradle
-JDK Tool
-JSch dependency
-JUnit
-Jackson 2
-JavaScript GUI
-LDAP
-Mailer
-MapDB API
-Matrix Authorization
-Matrix Project
-OWASP Markup
-PAM Authentication
-Pipeline
-Pipeline Graph
-Pipeline: API
-Pipeline: Basic
-Pipeline: Build
-Pipeline: Declarative
-Pipeline: GitHub
-Pipeline: Groovy
-Pipeline: Input
-Pipeline: Job
-Pipeline: Milestone
-Pipeline: Model
-Pipeline: Multibranch
-Pipeline: Nodes
-Pipeline: REST
-Pipeline: SCM
-Pipeline: Shared
-Pipeline: Stage
-Pipeline: Step
-Pipeline: Supporting
-Plain Credentials
-Resource Disposer
-SCM API
-SSH Credentials
-SSH Slaves
-Script Security
-Structs
-Subversion
-Timestamper
-Token Macro
-Workspace Cleanup
-bouncycastle API
+ant
+apache-httpcomponents-client-4-api
+authentication-tokens
+branch-api
+build-timeout
+ssh-agent
+cloudbees-folder
+credentials
+credentials-binding
+docker-commons
+docker-workflow
+durable-task
+emailext-template
+git
+git-client
+git-server
+github-branch-source
+gradle
+ldap
+jackson2-api
+ldap
+matrix-auth
+matrix-project
+resource-disposer
+scm-api
+ssh-credentials
+ssh-slaves
+token-macro

@@ -15,10 +15,9 @@ COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 VOLUME /var/jenkins_home
 
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 vim
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-RUN cd /tmp/docker-jenkins-master
-#; ./jenkins_prep.py
+RUN cd /tmp/docker-jenkins-master; ./jenkins_prep.py
 
 USER root
