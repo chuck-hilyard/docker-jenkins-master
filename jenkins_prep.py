@@ -9,6 +9,8 @@ for line in f:
   stripped = line.strip()
   suggested_plugins.append(stripped)
 
+subprocess.run(["jar", "xvf", "/usr/share/jenkins/jenkins.war", "jenkins-cli.jar"])
+
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
