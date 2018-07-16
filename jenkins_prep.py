@@ -2,12 +2,12 @@
 
 # set the initial admin password (doesn't change until jenkins is setup)
 f = open('/root/.jenkins/secrets/initialAdminPassword')
-f.strip()
-initialAdminPassword = f.readline()
+for line in f:
+  initialAdminPassword = line.strip()
 
 
 # setup the suggested and desired plugins list
-f = open('/tmp/suggested_plugins.txt', 'r')
+f = open('/tmp/docker-jenkins/suggested_plugins.txt', 'r')
 suggested_plugins = []
 for line in f:
   stripped = line.strip()
@@ -18,4 +18,4 @@ i = 0
 while i < len(suggested_plugins):
   print("installing {0}".format(suggested_plugins[i]))
   i += 1
-  java -jar WEB-INF/jenkins-cli.jar -s http://127.0.0.1:8080/ -auth admin:{0} install-plugin CCM
+  #java -jar WEB-INF/jenkins-cli.jar -s http://127.0.0.1:8080/ -auth admin:{0} install-plugin CCM
