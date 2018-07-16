@@ -2,7 +2,8 @@ FROM jenkins/jenkins:latest
 
 USER root
 
-RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
