@@ -22,8 +22,6 @@
         <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
           <filter></filter>
         </groupMembershipStrategy>
-        <managerDN>cn=PuppetMaster,dc=reachlocal,dc=com</managerDN>
-        <managerPasswordSecret>{AQAAABAAAAAQwXXaM2gelZN1PepcSSH7wncZUTSn4aRA6dXQRxQiCNQ=}</managerPasswordSecret>
         <displayNameAttributeName>gecos</displayNameAttributeName>
         <mailAddressAttributeName>mail</mailAddressAttributeName>
         <ignoreIfUnavailable>false</ignoreIfUnavailable>
