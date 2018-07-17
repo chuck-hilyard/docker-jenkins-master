@@ -25,4 +25,4 @@ RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 
 USER root
 
-#CMD [ "python3", "-u", "/var/lib/jenkins/slave.py" ]
+CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
