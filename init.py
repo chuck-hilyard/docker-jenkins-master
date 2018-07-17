@@ -5,7 +5,6 @@ import time
 
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
 jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
-jenkins_start.wait()
 
 # setup the suggested and desired plugins list
 f = open('/tmp/docker-jenkins-master/plugins.txt', 'r')
@@ -15,16 +14,14 @@ for line in f:
   suggested_plugins.append(stripped)
 
 
-
-
-#enviornment is off
-
 time.sleep(30)
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
+
+jenkins_start.wait()
 
 #r = requests.post("http://127.0.0.1:8080/restart")
 #print(r.status_code, r.reason)
