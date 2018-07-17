@@ -6,14 +6,14 @@
   <numExecutors>0</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.ProjectMatrixAuthorizationStrategy">
-    <permission>hudson.model.Hudson.Administer:admin</permission>
+  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
   </authorizationStrategy>
   <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.20">
     <disableMailAddressResolver>false</disableMailAddressResolver>
     <configurations>
       <jenkins.security.plugins.ldap.LDAPConfiguration>
-        <server>adauth.wh.reachlocal.com</server>
+        <server>auth.wh.reachlocal.com</server>
         <rootDN>dc=reachlocal,dc=com</rootDN>
         <inhibitInferRootDN>false</inhibitInferRootDN>
         <userSearchBase>ou=People</userSearchBase>
@@ -22,8 +22,8 @@
         <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
           <filter></filter>
         </groupMembershipStrategy>
-				<managerDN>cn=PuppetMaster,dc=reachlocal,dc=com</managerDN>
-        <managerPasswordSecret>{AQAAABAAAAAQaviCqHsQUQzxgqjqviFL82w7MBKHASLjF8tvxDMFN8w=}</managerPasswordSecret>
+        <managerDN>cn=PuppetMaster,dc=reachlocal,dc=com</managerDN>
+        <managerPasswordSecret>{AQAAABAAAAAQP9nYSQGh7uuzvbrAgySFyZRn6/2L8Y5V0+XH33TuOUY=}</managerPasswordSecret>
         <displayNameAttributeName>gecos</displayNameAttributeName>
         <mailAddressAttributeName>mail</mailAddressAttributeName>
         <ignoreIfUnavailable>false</ignoreIfUnavailable>
@@ -48,7 +48,6 @@
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
   <clouds/>
-  <quietPeriod>5</quietPeriod>
   <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
   <views>
     <hudson.model.AllView>
