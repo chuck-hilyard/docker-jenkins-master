@@ -19,7 +19,7 @@ for line in f:
 
 #enviornment is off
 
-time.sleep(300)
+time.sleep(30)
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
