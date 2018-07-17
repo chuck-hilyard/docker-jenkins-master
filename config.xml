@@ -13,7 +13,7 @@
     <disableMailAddressResolver>false</disableMailAddressResolver>
     <configurations>
       <jenkins.security.plugins.ldap.LDAPConfiguration>
-        <server>adauth</server>
+        <server>adauth.wh.reachlocal.com</server>
         <rootDN>dc=reachlocal,dc=com</rootDN>
         <inhibitInferRootDN>false</inhibitInferRootDN>
         <userSearchBase>ou=People</userSearchBase>
