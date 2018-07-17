@@ -15,6 +15,10 @@ for line in f:
   suggested_plugins.append(stripped)
 
 
+
+
+#enviornment is off
+
 time.sleep(300)
 i = 0
 while i < len(suggested_plugins):
