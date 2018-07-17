@@ -1,4 +1,4 @@
-#import requests
+import http.client
 import subprocess
 import time
 
@@ -25,3 +25,7 @@ jenkins_start.wait()
 
 #r = requests.post("http://127.0.0.1:8080/restart")
 #print(r.status_code, r.reason)
+
+
+# dumb method to keep the processes alive
+jenkins_start.wait()

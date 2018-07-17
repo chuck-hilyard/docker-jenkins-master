@@ -1,6 +1,3 @@
-jdk-tool
-command-launcher
-ccm
 ant
 authentication-tokens
 branch-api
