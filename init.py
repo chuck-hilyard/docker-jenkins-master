@@ -1,4 +1,5 @@
 import subprocess
+import time
 
 
 params = [ 'java', '-jar', '/usr/share/jenkins/jenkins.war']
@@ -11,6 +12,8 @@ for line in f:
   stripped = line.strip()
   suggested_plugins.append(stripped)
 
+
+time.sleep(300)
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
