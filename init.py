@@ -21,8 +21,8 @@ while i < len(suggested_plugins):
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
-#status = http.client.HTTPConnection('http://127.0.0.1:8080/restart')
-#print("status: {}".format(status))
+status = http.client.HTTPConnection('http://127.0.0.1:8080/restart')
+print("status: {}".format(status))
 
 
 # dumb method to keep the processes alive
