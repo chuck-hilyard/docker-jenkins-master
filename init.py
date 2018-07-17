@@ -5,7 +5,7 @@ params = [ 'java', '-jar', '/usr/share/jenkins/jenkins.war']
 subprocess.Popen(params, stdout=subprocess.PIPE)
 
 # setup the suggested and desired plugins list
-f = open('./plugins.txt', 'r')
+f = open('/tmp/docker-jenkins-master/plugins.txt', 'r')
 suggested_plugins = []
 for line in f:
   stripped = line.strip()
