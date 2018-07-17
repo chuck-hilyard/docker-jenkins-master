@@ -18,6 +18,7 @@ ldap
 matrix-auth
 matrix-project
 resource-disposer
+saferestart
 scm-api
 ssh-credentials
 ssh-slaves
