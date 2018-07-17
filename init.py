@@ -19,7 +19,7 @@ time.sleep(300)
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
-  subprocess.Popen(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
+  subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
 #r = requests.post("http://127.0.0.1:8080/restart")
