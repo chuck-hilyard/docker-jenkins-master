@@ -15,7 +15,7 @@ for line in f:
   suggested_plugins.append(stripped)
 
 
-time.sleep(30)
+time.sleep(300)
 i = 0
 while i < len(suggested_plugins):
   PLUGIN = suggested_plugins[i]
