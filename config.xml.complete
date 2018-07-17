@@ -1,28 +1,31 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <hudson>
-  <disabledAdministrativeMonitors/>
+  <disabledAdministrativeMonitors>
+    <string>hudsonHomeIsFull</string>
+  </disabledAdministrativeMonitors>
   <version>2.132</version>
   <installStateName>RUNNING</installStateName>
   <numExecutors>0</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
-    <permission>hudson.model.Hudson.Administer:admin</permission>
+  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
   </authorizationStrategy>
   <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.20">
     <disableMailAddressResolver>false</disableMailAddressResolver>
     <configurations>
       <jenkins.security.plugins.ldap.LDAPConfiguration>
         <server>auth.wh.reachlocal.com</server>
-        <rootDN></rootDN>
+        <rootDN>dc=reachlocal,dc=com</rootDN>
         <inhibitInferRootDN>false</inhibitInferRootDN>
         <userSearchBase>ou=People</userSearchBase>
         <userSearch>uid={0}</userSearch>
+        <groupSearchBase>ou=Group</groupSearchBase>
         <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
           <filter></filter>
         </groupMembershipStrategy>
-        <managerPasswordSecret>{AQAAABAAAAAQHxW8GN78uEgfF9VAmF7s2rjlleo+yTwJucZfC4VNoOc=}</managerPasswordSecret>
-        <displayNameAttributeName>displayname</displayNameAttributeName>
+        <managerPasswordSecret>{AQAAABAAAAAQUrnT8jftAzQVemoJMR+1HfFY3+qfYQ+W4C6f55ackbY=}</managerPasswordSecret>
+        <displayNameAttributeName>gecos</displayNameAttributeName>
         <mailAddressAttributeName>mail</mailAddressAttributeName>
         <ignoreIfUnavailable>false</ignoreIfUnavailable>
         <extraEnvVars class="linked-hash-map">
@@ -59,6 +62,9 @@
   <primaryView>all</primaryView>
   <slaveAgentPort>50000</slaveAgentPort>
   <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+  </crumbIssuer>
   <nodeProperties/>
   <globalNodeProperties/>
 </hudson>
