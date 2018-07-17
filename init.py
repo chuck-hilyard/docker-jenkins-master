@@ -1,4 +1,4 @@
-import requests
+#import requests
 import subprocess
 import time
 
@@ -22,5 +22,5 @@ while i < len(suggested_plugins):
   subprocess.Popen(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
-r = requests.post("http://127.0.0.1:8080/restart")
-print(r.status_code, r.reason)
+#r = requests.post("http://127.0.0.1:8080/restart")
+#print(r.status_code, r.reason)
