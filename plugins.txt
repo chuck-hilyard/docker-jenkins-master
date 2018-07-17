@@ -1,4 +1,3 @@
-ccm
 ant
 authentication-tokens
 branch-api
