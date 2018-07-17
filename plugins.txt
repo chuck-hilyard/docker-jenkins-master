@@ -1,11 +1,8 @@
 ant
-blueocean
-apache-httpcomponents-client-4-api
 authentication-tokens
 branch-api
 build-timeout
 ssh-agent
-cloudbees-folder
 credentials
 credentials-binding
 docker-commons
@@ -18,8 +15,6 @@ git-server
 github-branch-source
 gradle
 ldap
-jackson2-api
-ldap
 matrix-auth
 matrix-project
 resource-disposer
@@ -27,4 +22,3 @@ scm-api
 ssh-credentials
 ssh-slaves
 token-macro
-workflow-aggregator
