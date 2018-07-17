@@ -23,8 +23,8 @@ while i < len(suggested_plugins):
 
 jenkins_start.wait()
 
-#r = requests.post("http://127.0.0.1:8080/restart")
-#print(r.status_code, r.reason)
+status = http.client.HTTPConnection('http://127.0.0.1:8080/restart')
+print("status: {}".format(status))
 
 
 # dumb method to keep the processes alive
