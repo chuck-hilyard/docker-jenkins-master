@@ -1,6 +1,8 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <hudson>
-  <disabledAdministrativeMonitors/>
+  <disabledAdministrativeMonitors>
+    <string>hudsonHomeIsFull</string>
+  </disabledAdministrativeMonitors>
   <version>2.132</version>
   <installStateName>RUNNING</installStateName>
   <numExecutors>0</numExecutors>
@@ -22,8 +24,7 @@
         <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
           <filter></filter>
         </groupMembershipStrategy>
-        <managerDN>cn=PuppetMaster,dc=reachlocal,dc=com</managerDN>
-        <managerPasswordSecret>{AQAAABAAAAAQP9nYSQGh7uuzvbrAgySFyZRn6/2L8Y5V0+XH33TuOUY=}</managerPasswordSecret>
+        <managerPasswordSecret>{AQAAABAAAAAQUrnT8jftAzQVemoJMR+1HfFY3+qfYQ+W4C6f55ackbY=}</managerPasswordSecret>
         <displayNameAttributeName>gecos</displayNameAttributeName>
         <mailAddressAttributeName>mail</mailAddressAttributeName>
         <ignoreIfUnavailable>false</ignoreIfUnavailable>
