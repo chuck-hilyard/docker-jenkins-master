@@ -3,7 +3,8 @@ import time
 
 
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
-subprocess.Popen(params, stdout=subprocess.PIPE)
+jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
+jenkins_start.wait()
 
 # setup the suggested and desired plugins list
 f = open('/tmp/docker-jenkins-master/plugins.txt', 'r')
