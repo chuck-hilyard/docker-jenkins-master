@@ -9,9 +9,6 @@ ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
 ENV EXECUTOR_NUMBER 1
 ENV SLAVE_EXECUTORS "1"
-ENV JAVA_OPTS "-Djenkins.install.runSetupWizard=false"
-
-# Skip initial setup
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
 COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
