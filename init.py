@@ -26,8 +26,8 @@ while i < len(suggested_plugins):
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in f:
-  REPO_NAME = repo.split(str="~").strip()
-  REPO_URL = repo.split(str="~").strip()
+  REPO_NAME = repo.split("~",1)[0]
+  REPO_URL = repo.split("~",1)[1]
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
   response = requests.get(url)
   BRANCH = response.text
