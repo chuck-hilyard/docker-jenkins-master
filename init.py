@@ -23,14 +23,15 @@ while i < len(suggested_plugins):
   i += 1
 
 # add github repos to this jenkins server
-#f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
-#repos = []
-#for repo in f:
-#  REPO = repo.strip()
-#  url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO)
-#  BRANCH = requests.get(url)
-#  subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
-#  #subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init"])
+f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
+repos = []
+for repo in f:
+  REPO_NAME = repo.split(str="~").strip()
+  REPO_URL = repo.split(str="~").strip()
+  url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+  response = requests.get(url)
+	BRANCH = response.text
+  subprocess.run(["git", "clone", REPO_URL, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
