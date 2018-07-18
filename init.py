@@ -20,7 +20,12 @@ while i < len(suggested_plugins):
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
-subprocess.run(["git", "clone", "https://github.com/chuck-hilyard/jenkins-init.git", "/var/jenkins_home/jobs/jenkins-init"])
+# add github repos to this jenkins server
+f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
+repos = []
+for repo in repos:
+  REPO = repo.strip()
+  subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init"])
 
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 

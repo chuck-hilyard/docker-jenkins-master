@@ -1,0 +1,3 @@
+https://github.com/reachlocal/madmin-client.git
+https://github.com/reachlocal/media-gateway.git
+https://github.com/chuck-hilyard/jenkins-init.git

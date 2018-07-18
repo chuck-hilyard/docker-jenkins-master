@@ -12,6 +12,7 @@ This repo is used by docker during docker build and docker run.  See this.Docker
 
 * Docker installed on your local dev machine
 * plugins.txt lists all the extra plugins to be installed during runtime
+* repos.txt lists all the github repos added as projects to jenkins
 * .xml files are used by the general jenkins configuration
 
 ### Installing
