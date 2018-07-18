@@ -27,8 +27,8 @@ f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in repos:
   REPO = repo.strip()
-	url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO)
-	BRANCH = requests.get(url)
+  url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO)
+  BRANCH = requests.get(url)
   subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
   #subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init"])
 
