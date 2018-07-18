@@ -12,6 +12,7 @@ ENV JENKINS_PASS admin
 COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY config.xml /var/jenkins_home
+COPY jenkins.CLI.xml /var/jenkins_home
 # we'll use this if we need a pipeline build to setup initial jenkins stuff
 #COPY init_config.xml /var/jenkins_home/jobs/init/config.xml
 
@@ -20,7 +21,7 @@ VOLUME /var/jenkins_home
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins vim
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-RUN chown jenkins:jenkins /var/jenkins_home/config.xml
+RUN chown jenkins:jenkins /var/jenkins_home/*.xml
 
 USER jenkins
 
