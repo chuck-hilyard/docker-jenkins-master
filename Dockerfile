@@ -7,13 +7,10 @@ RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker
 
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
-#ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
 COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY *.xml /var/jenkins_home/
-# we'll use this if we need a pipeline build to setup initial jenkins stuff
-#COPY init_config.xml /var/jenkins_home/jobs/init/config.xml
 
 VOLUME /var/jenkins_home
 

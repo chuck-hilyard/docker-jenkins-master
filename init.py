@@ -13,7 +13,6 @@ for line in f:
   stripped = line.strip()
   suggested_plugins.append(stripped)
 
-
 time.sleep(30)
 i = 0
 while i < len(suggested_plugins):
