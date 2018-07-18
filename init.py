@@ -30,7 +30,7 @@ for repo in f:
   REPO_URL = repo.split(str="~").strip()
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
   response = requests.get(url)
-	BRANCH = response.text
+  BRANCH = response.text
   subprocess.run(["git", "clone", REPO_URL, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
 
 # after all the changes, hit restart
