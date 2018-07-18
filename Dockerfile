@@ -22,4 +22,6 @@ RUN chown jenkins:jenkins /var/jenkins_home/*.xml
 
 USER jenkins
 
+COPY /Users/chuck.hilyard/.ssh/aws_codebuild /var/jenkins_home/.ssh
+
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
