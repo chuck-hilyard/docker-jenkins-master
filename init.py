@@ -25,7 +25,7 @@ while i < len(suggested_plugins):
 # add github repos to this jenkins server
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
-for repo in repos:
+for repo in f:
   REPO = repo.strip()
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO)
   BRANCH = requests.get(url)
