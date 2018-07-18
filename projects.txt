@@ -1,0 +1,17 @@
+{
+	"repos": {
+    "reachlocal": [
+      {
+    	  "projects": [
+    		  "madmin-client",
+    			"media-gateway"
+    		]
+      }
+    ],
+    "chuck-hilyard" [
+        "projects": [
+    	    "jenkins-init"
+    		]
+    ]
+	}
+}
