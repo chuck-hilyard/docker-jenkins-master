@@ -26,11 +26,12 @@ f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in repos:
   REPO = repo.strip()
-	BRANCH = call to consul
+	#BRANCH = call to consul
+  #subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
   subprocess.run(["git", "clone", REPO, "/var/jenkins_home/jobs/jenkins-init"])
 
 # after all the changes, hit restart
-subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart", "--branch", BRANCH])
+subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
 # dumb method to keep the this.process alive
 jenkins_start.wait()
