@@ -19,6 +19,6 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown jenkins:jenkins /var/jenkins_home/*.xml
 
-USER jenkins
+USER root
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
