@@ -15,6 +15,7 @@ COPY *.xml /var/jenkins_home/
 VOLUME /var/jenkins_home
 
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins vim
+RUN pip3 install python-consul
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown jenkins:jenkins /var/jenkins_home/*.xml
