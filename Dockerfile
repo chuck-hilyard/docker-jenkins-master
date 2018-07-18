@@ -11,7 +11,7 @@ ENV JENKINS_PASS admin
 
 COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
-COPY *.xml /var/jenkins_home
+COPY *.xml /var/jenkins_home/
 # we'll use this if we need a pipeline build to setup initial jenkins stuff
 #COPY init_config.xml /var/jenkins_home/jobs/init/config.xml
 
