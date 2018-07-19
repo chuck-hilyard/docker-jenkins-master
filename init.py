@@ -40,11 +40,11 @@ for repo in f:
   response = requests.get(url)
   BRANCH = response.text
   subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-	try:
-	  copyfile('/tmp/docker-jenkins-master/config.xml', TARGET_FOLDER)
-	except IOError as e:
-	  print("unable to copy file {}".format(e))
-		exit(1)
+  try:
+   copyfile('/tmp/docker-jenkins-master/config.xml', TARGET_FOLDER)
+  except IOError as e:
+    print("unable to copy file {}".format(e))
+  exit(1)
 
 
 # after all the changes, hit restart
