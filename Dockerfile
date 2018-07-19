@@ -22,9 +22,9 @@ RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/
 
-USER jenkins
+#USER jenkins
 COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
-RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
+#RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
