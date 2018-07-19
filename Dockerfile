@@ -11,7 +11,8 @@ ENV JENKINS_PASS admin
 COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY *.xml /var/jenkins_home/
-COPY aws_codebuild /var/jenkins_home/.ssh/aws_codebuild; chown jenkins:jenkins ~/.ssh/aws_codebuild
+COPY aws_codebuild /var/jenkins_home/.ssh/aws_codebuild
+COPY aws_codebuild /.ssh/aws_codebuild
 
 VOLUME /var/jenkins_home
 
@@ -20,8 +21,10 @@ RUN pip3 install requests
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown jenkins:jenkins /var/jenkins_home/*.xml
+RUN chown jenkins:jenkins /var/jenkins_home/.ssh
+RUN chown jenkins:jenkins /var/jenkins_home/.ssh/aws_codebuild
 
-USER jenkins
+#USER jenkins
 
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
