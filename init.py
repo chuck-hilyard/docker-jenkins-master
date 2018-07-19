@@ -8,7 +8,7 @@ import http.client
 import requests
 import subprocess
 import time
-from shutil import copyfile
+from shutil import copy
 
 # startup the jenkins service
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
