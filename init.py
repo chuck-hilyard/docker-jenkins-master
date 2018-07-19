@@ -40,24 +40,26 @@ for repo in f:
   response = requests.get(url)
   if response.status_code == 200:
     BRANCH = response.text
-    CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
-    try:
-      subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-    except:
-      print("git clone of {} failed, skipping...".format(REPO_NAME))
-    try:
-      template_repo_config_file = open('/tmp/docker-jenkins-master/template_repo_config.xml', 'r')
-      template_repo_config_string = template_repo_config_file.read()
-      template_repo_config_file.close()
-      formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
-      print("****************************** writing config.xml *********************")
-      print("formatted_template: ", formatted_template)
-      print("CONFIG FILE DIR: ", CONFIG_FILE_DIR)
-      repo_config_xml = open(CONFIG_FILE_DIR, 'w')
-      repo_config_xml.write(formatted_template)
-      repo_config_xml.close()
-    except FileNotFoundError as e:
-      print("file copy to {} failed".format(CONFIG_FILE_DIR))
+	else:
+    BRANCH = "master"
+  CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
+  try:
+    subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
+  except:
+    print("git clone of {} failed, skipping...".format(REPO_NAME))
+  try:
+    template_repo_config_file = open('/tmp/docker-jenkins-master/template_repo_config.xml', 'r')
+    template_repo_config_string = template_repo_config_file.read()
+    template_repo_config_file.close()
+    formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
+    print("****************************** writing config.xml *********************")
+    print("formatted_template: ", formatted_template)
+    print("CONFIG FILE DIR: ", CONFIG_FILE_DIR)
+    repo_config_xml = open(CONFIG_FILE_DIR, 'w')
+    repo_config_xml.write(formatted_template)
+    repo_config_xml.close()
+  except FileNotFoundError as e:
+    print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
