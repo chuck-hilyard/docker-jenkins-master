@@ -8,6 +8,7 @@ import http.client
 import requests
 import subprocess
 import time
+from shutil import copyfile
 
 # startup the jenkins service
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
@@ -39,6 +40,12 @@ for repo in f:
   response = requests.get(url)
   BRANCH = response.text
   subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
+	try:
+	  copyfile('/tmp/docker-jenkins-master/config.xml', TARGET_FOLDER)
+	except IOError as e:
+	  print("unable to copy file {}".format(e))
+		exit(1)
+
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
