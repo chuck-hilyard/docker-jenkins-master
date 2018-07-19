@@ -40,7 +40,6 @@ for repo in f:
   response = requests.get(url)
   BRANCH = response.text
   subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-	TARGET_FOLDER_CONFIG_FILE = TARGET_FOLDER + "/config.xml"
   try:
    copy('/tmp/docker-jenkins-master/config.xml', TARGET_FOLDER)
   except IOError as e:
