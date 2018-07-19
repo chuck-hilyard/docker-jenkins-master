@@ -12,7 +12,7 @@ COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY *.xml /var/jenkins_home/
 COPY aws_codebuild /var/jenkins_home/.ssh/aws_codebuild
-COPY aws_codebuild /.ssh/aws_codebuild
+COPY aws_codebuild /root/.ssh/aws_codebuild
 
 VOLUME /var/jenkins_home
 
