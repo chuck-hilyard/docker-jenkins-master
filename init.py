@@ -52,8 +52,7 @@ for repo in f:
       formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
       repo_config_xml = open(CONFIG_FILE_DIR, 'w')
       repo_config_xml.write(formatted_template)
-      repo_config_xml.close
-      #copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
+      #repo_config_xml.close
     except FileNotFoundError as e:
       print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
