@@ -42,11 +42,12 @@ for repo in f:
   CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
   try:
     subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-    copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
   except:
-    print("git clone of {} failed, skipping...").format(REPO_NAME)
-  else:
-    print("in the else clause")
+    print("git clone of {} failed, skipping...".format(REPO_NAME))
+  try:
+    copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
+  except FileNotFoundError as e:
+    print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
