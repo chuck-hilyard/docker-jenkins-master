@@ -30,6 +30,8 @@ while i < len(suggested_plugins):
   i += 1
 
 # add github repos to this jenkins server
+template_repo_config_file = open('/tmp/docker-jenkins-master/template_repo_config.xml', 'r')
+template_repo_config_string = template_repo_config_file.read()
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in f:
@@ -47,7 +49,11 @@ for repo in f:
     except:
       print("git clone of {} failed, skipping...".format(REPO_NAME))
     try:
-      copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
+      formatted_template = template_repo_config_string.format(REPO_URL, BRANCH)
+      repo_config_xml = open(CONFIG_FILE_DIR, 'w')
+      repo_config_xml.write(formatted_template)
+      repo_config_xml.close
+      #copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
     except FileNotFoundError as e:
       print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
