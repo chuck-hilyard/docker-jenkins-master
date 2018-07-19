@@ -40,7 +40,7 @@ for repo in f:
   response = requests.get(url)
   if response.status_code == 200:
     BRANCH = response.text
-	else:
+  else:
     BRANCH = "master"
   CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
   try:
