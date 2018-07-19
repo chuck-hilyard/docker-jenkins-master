@@ -23,7 +23,7 @@ RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown jenkins:jenkins /var/jenkins_home/*.xml
 RUN chown jenkins:jenkins /var/jenkins_home/.ssh
-RUN chown jenkins:jenkins /var/jenkins_home/.ssh/aws_codebuild
+RUN chown jenkins:jenkins /var/jenkins_home/.ssh/id_rsa
 
 #USER jenkins
 

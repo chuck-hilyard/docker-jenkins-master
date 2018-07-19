@@ -1,3 +1,9 @@
+# this is called by docker run
+#
+# starts jenkins
+# installs plugins
+# adds github based projects to jenkins/jobs
+
 import http.client
 import requests
 import subprocess
@@ -26,12 +32,13 @@ while i < len(suggested_plugins):
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in f:
-  REPO_NAME = repo.split("~",1)[0]
-  REPO_URL = repo.split("~",1)[1]
+  REPO_NAME = repo.split("~",1)[0].rstrip('\n')
+  REPO_URL = repo.split("~",1)[1].rstrip('\n')
+	TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
   response = requests.get(url)
   BRANCH = response.text
-  subprocess.run(["git", "clone", REPO_URL, "/var/jenkins_home/jobs/jenkins-init", "--branch", BRANCH])
+  subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
