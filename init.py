@@ -40,7 +40,7 @@ for repo in f:
   response = requests.get(url)
   BRANCH = response.text
   subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-	CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(TARGET_FOLDER)
+  CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(TARGET_FOLDER)
   copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
 
 # after all the changes, hit restart
