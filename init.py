@@ -49,7 +49,7 @@ for repo in f:
     except:
       print("git clone of {} failed, skipping...".format(REPO_NAME))
     try:
-      formatted_template = template_repo_config_string.format(REPO_URL, BRANCH)
+      formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
       repo_config_xml = open(CONFIG_FILE_DIR, 'w')
       repo_config_xml.write(formatted_template)
       repo_config_xml.close
