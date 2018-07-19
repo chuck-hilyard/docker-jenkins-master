@@ -55,7 +55,7 @@ for repo in f:
       print("CONFIG FILE DIR: ", CONFIG_FILE_DIR)
       repo_config_xml = open(CONFIG_FILE_DIR, 'w')
       repo_config_xml.write(formatted_template)
-      #repo_config_xml.close()
+      repo_config_xml.close()
     except FileNotFoundError as e:
       print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
