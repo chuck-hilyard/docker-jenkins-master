@@ -38,16 +38,17 @@ for repo in f:
   TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
   response = requests.get(url)
-  BRANCH = response.text
-  CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
-  try:
-    subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
-  except:
-    print("git clone of {} failed, skipping...".format(REPO_NAME))
-  try:
-    copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
-  except FileNotFoundError as e:
-    print("file copy to {} failed".format(CONFIG_FILE_DIR))
+	if response.status_code == 200:
+    BRANCH = response.text
+    CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
+    try:
+      subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
+    except:
+      print("git clone of {} failed, skipping...".format(REPO_NAME))
+    try:
+      copy('/tmp/docker-jenkins-master/config.xml', CONFIG_FILE_DIR)
+    except FileNotFoundError as e:
+      print("file copy to {} failed".format(CONFIG_FILE_DIR))
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
