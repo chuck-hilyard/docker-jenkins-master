@@ -52,6 +52,7 @@ for repo in f:
       formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
       print("****************************** writing config.xml *********************")
       print("formatted_template: ", formatted_template)
+      print("CONFIG FILE DIR: ", CONFIG_FILE_DIR)
       repo_config_xml = open(CONFIG_FILE_DIR, 'w')
       repo_config_xml.write(formatted_template)
       #repo_config_xml.close()
