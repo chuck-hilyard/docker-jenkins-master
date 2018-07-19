@@ -2,7 +2,7 @@ FROM jenkins/jenkins:latest
 
 USER root
 
-COPY plugins.txt /tmp/plugins.txt
+#COPY plugins.txt /tmp/plugins.txt
 RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding 
 
 ENV JENKINS_USER admin
@@ -18,7 +18,6 @@ VOLUME /var/jenkins_home
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins python3-pip vim
 RUN pip3 install requests
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/
 
