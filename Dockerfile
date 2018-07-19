@@ -17,12 +17,12 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python
 RUN pip3 install requests
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-#RUN chown -R jenkins:jenkins /var/jenkins_home/
+RUN chown -R jenkins:jenkins /var/jenkins_home/
 
 USER jenkins
 COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
+RUN git clone https://github.com/chuck-hilyard/docker-jenkins-master /var/jenkins_home --branch master
 RUN chown -R jenkins:jenkins /var/jenkins_home/
 
 
