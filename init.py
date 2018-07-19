@@ -38,7 +38,7 @@ for repo in f:
   TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
   url = "http://consul.chilyard.int.media.dev.usa.reachlocalservices.com:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
   response = requests.get(url)
-	if response.status_code == 200:
+  if response.status_code == 200:
     BRANCH = response.text
     CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
     try:
