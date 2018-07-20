@@ -24,4 +24,3 @@ scm-api
 ssh-credentials
 ssh-slaves
 token-macro
-xvnc-plugin
