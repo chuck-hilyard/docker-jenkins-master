@@ -28,6 +28,11 @@ while i < len(suggested_plugins):
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
+# install build/test software
+subprocess.run(["curl", "-sL", "https://deb.nodesource.com/setup_10.x", "|", "bash -"])
+subprocess.run(["apt-get", "install", "-y", "nodejs"])
+# TODO: verify npm is installed
+
 # add github repos as jobs to this jenkins server
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
@@ -41,7 +46,7 @@ for repo in f:
     BRANCH = response.text
   else:
     BRANCH = "master"
-  CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
+    REPO_CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
   try:
     subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH, "--depth", "1"])
   except:
@@ -53,12 +58,12 @@ for repo in f:
     formatted_template = template_repo_config_string.format(REPO_URL=REPO_URL, BRANCH=BRANCH)
     print("****************************** writing config.xml *********************")
     print("formatted_template: ", formatted_template)
-    print("CONFIG FILE DIR: ", CONFIG_FILE_DIR)
-    repo_config_xml = open(CONFIG_FILE_DIR, 'w')
+    print("CONFIG FILE DIR: ", REPO_CONFIG_FILE_DIR)
+    repo_config_xml = open(REPO_CONFIG_FILE_DIR, 'w')
     repo_config_xml.write(formatted_template)
     repo_config_xml.close()
   except FileNotFoundError as e:
-    print("file copy to {} failed".format(CONFIG_FILE_DIR))
+    print("file copy to {} failed".format(REPO_CONFIG_FILE_DIR))
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
