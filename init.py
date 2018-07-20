@@ -9,6 +9,13 @@ import requests
 import subprocess
 import time
 
+# add jenkins user to sudoers
+jenkins_sudoers = "jenkins	ALL=(ALL) NOPASSWD: ALL"
+sudoers_file = open('/etc/sudoers.d/jenkins', 'w')
+sudoers_file.write(jenkins_sudoers)
+sudoers_file.close()
+
+
 # startup the jenkins service
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
 jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
@@ -30,18 +37,18 @@ while i < len(suggested_plugins):
 
 # install build/test software
 # ***** make sure the previous install is done prior to moving on
-subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
+subprocess.run(["sudo curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
 time.sleep(15)
-subprocess.run(["apt-get", "install", "-y", "nodejs"])
+subprocess.run(["sudo", "apt-get", "install", "-y", "nodejs"])
 time.sleep(15)
 # TODO: verify npm is installed
-subprocess.run(["apt-get", "install", "-y", "chromium"])
+subprocess.run(["sudo", "apt-get", "install", "-y", "chromium"])
 time.sleep(15)
-subprocess.run(["apt-get", "install", "-y", "libgconf2-4"])
-subprocess.run(["apt-get", "install", "-y", "awscli"])
+subprocess.run(["sudo", "apt-get", "install", "-y", "libgconf2-4"])
+subprocess.run(["sudo", "apt-get", "install", "-y", "awscli"])
 #subprocess.run(["usermod", "-aG", "docker", "jenkins"])
 time.sleep(15)
-subprocess.run(["npm", "install", "-g", "gulp"])
+subprocess.run(["sudo", "npm", "install", "-g", "gulp"])
 
 # add github repos as jobs to this jenkins server
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
