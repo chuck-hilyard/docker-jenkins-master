@@ -32,7 +32,9 @@ while i < len(suggested_plugins):
 subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
 subprocess.run(["apt-get", "install", "-y", "nodejs"])
 # TODO: verify npm is installed
-subprocess.run(["apt-get", "install", "-y", "chromium-browser"])
+subprocess.run(["apt-get", "install", "-y", "chromium"])
+subprocess.run(["apt-get", "install", "-y", "libgconf2-4"])
+subprocess.run(["apt-get", "install", "-y", "awscli"])
 
 # add github repos as jobs to this jenkins server
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
