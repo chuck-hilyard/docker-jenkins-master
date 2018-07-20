@@ -11,8 +11,6 @@ COPY --chown=jenkins *.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY --chown=jenkins *.xml /var/jenkins_home/
 COPY aws_codebuild /root/.ssh/id_rsa
 
-VOLUME /var/jenkins_home
-
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins python3-pip vim
 RUN pip3 install requests
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -25,5 +23,6 @@ RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN git clone https://github.com/chuck-hilyard/docker-jenkins-master /var/jenkins_home/docker-jenkins-master --branch master
 RUN chown -R jenkins:jenkins /var/jenkins_home/
 
+VOLUME /var/jenkins_home
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
