@@ -21,7 +21,7 @@ USER jenkins
 COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN git clone https://github.com/chuck-hilyard/docker-jenkins-master /var/jenkins_home/docker-jenkins-master --branch master
-RUN chown -R jenkins:jenkins /var/jenkins_home/
+#RUN chown -R jenkins:jenkins /var/jenkins_home/
 
 VOLUME /var/jenkins_home
 
