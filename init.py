@@ -37,7 +37,7 @@ while i < len(suggested_plugins):
 
 # install build/test software
 # ***** make sure the previous install is done prior to moving on
-subprocess.run(["sudo curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
+subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |sudo -E bash -"], shell=True)
 time.sleep(15)
 subprocess.run(["sudo", "apt-get", "install", "-y", "nodejs"])
 time.sleep(15)
