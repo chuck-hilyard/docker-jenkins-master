@@ -51,6 +51,7 @@ time.sleep(15)
 subprocess.run(["sudo", "npm", "install", "-g", "gulp"])
 
 # add github repos as jobs to this jenkins server
+subprocess.run(["ssh-keyscan", "github.com", ">>", "/var/jenkins_home/.ssh/known_hosts"])
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in f:
