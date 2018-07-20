@@ -1,6 +1,6 @@
 FROM jenkins/jenkins:latest
 
-#USER root
+USER root
 
 RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding 
 
@@ -12,7 +12,7 @@ RUN pip3 install requests
 
 COPY --chown=jenkins *.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY --chown=jenkins *.xml /var/jenkins_home/
-COPY aws_codebuild --chown=root /root/.ssh/id_rsa
+COPY --chown=root aws_codebuild /root/.ssh/id_rsa
 COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
 
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
