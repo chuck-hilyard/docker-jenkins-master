@@ -23,3 +23,4 @@ scm-api
 ssh-credentials
 ssh-slaves
 token-macro
+xnvc
