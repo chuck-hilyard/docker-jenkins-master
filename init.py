@@ -35,7 +35,7 @@ subprocess.run(["apt-get", "install", "-y", "nodejs"])
 subprocess.run(["apt-get", "install", "-y", "chromium"])
 subprocess.run(["apt-get", "install", "-y", "libgconf2-4"])
 subprocess.run(["apt-get", "install", "-y", "awscli"])
-subprocess.run(["usermod", "-aG", "docker", "jenkins"])
+#subprocess.run(["usermod", "-aG", "docker", "jenkins"])
 subprocess.run(["npm", "install", "-g", "gulp"])
 
 # add github repos as jobs to this jenkins server
