@@ -30,7 +30,7 @@ while i < len(suggested_plugins):
 
 # install build/test software
 subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
-subprocess.run(["apt-get", "install", "-y", "nodejs"])
+#subprocess.run(["apt-get", "install", "-y", "nodejs"])
 # TODO: verify npm is installed
 subprocess.run(["apt-get", "install", "-y", "chromium"])
 subprocess.run(["apt-get", "install", "-y", "libgconf2-4"])
