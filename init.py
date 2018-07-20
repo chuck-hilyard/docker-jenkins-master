@@ -8,7 +8,6 @@ import http.client
 import requests
 import subprocess
 import time
-from shutil import copy
 
 # startup the jenkins service
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
@@ -29,7 +28,7 @@ while i < len(suggested_plugins):
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
   i += 1
 
-# add github repos to this jenkins server
+# add github repos as jobs to this jenkins server
 f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
 repos = []
 for repo in f:
@@ -44,7 +43,7 @@ for repo in f:
     BRANCH = "master"
   CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
   try:
-    subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH])
+    subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH, "--depth", "1"])
   except:
     print("git clone of {} failed, skipping...".format(REPO_NAME))
   try:
