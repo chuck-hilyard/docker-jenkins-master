@@ -30,12 +30,16 @@ while i < len(suggested_plugins):
 
 # install build/test software
 subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |bash -"], shell=True)
-#subprocess.run(["apt-get", "install", "-y", "nodejs"])
+time.sleep(15)
+subprocess.run(["apt-get", "install", "-y", "nodejs"])
+time.sleep(15)
 # TODO: verify npm is installed
 subprocess.run(["apt-get", "install", "-y", "chromium"])
+time.sleep(15)
 subprocess.run(["apt-get", "install", "-y", "libgconf2-4"])
 subprocess.run(["apt-get", "install", "-y", "awscli"])
 #subprocess.run(["usermod", "-aG", "docker", "jenkins"])
+time.sleep(15)
 subprocess.run(["npm", "install", "-g", "gulp"])
 
 # add github repos as jobs to this jenkins server

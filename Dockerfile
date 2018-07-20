@@ -10,7 +10,7 @@ ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
 ENV CHROME_BIN /usr/bin/chromium
 
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins python3-pip vim
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install python3 python3-jenkins python3-pip vim sudo
 RUN pip3 install requests
 
 COPY --chown=jenkins *.groovy /usr/share/jenkins/ref/init.groovy.d/
