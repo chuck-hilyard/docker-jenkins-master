@@ -16,18 +16,13 @@ COPY aws_codebuild /root/.ssh/id_rsa
 
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-RUN cd /etc; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-RUN cd /var/jenkins_home; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-#RUN cd /var/jenkins_home; git clone https://github.com/chuck-hilyard/docker-jenkins-master 
-RUN chown -R jenkins:jenkins /var/jenkins_home/
+RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 
-#COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
-#RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
-#RUN git clone https://github.com/chuck-hilyard/docker-jenkins-master /var/jenkins_home/docker-jenkins-master --branch master
-#RUN chown -R jenkins:jenkins /var/jenkins_home/
 
 VOLUME /var/jenkins_home
 
 USER jenkins
+RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
+COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
