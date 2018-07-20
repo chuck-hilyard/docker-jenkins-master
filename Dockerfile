@@ -21,7 +21,7 @@ RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 
 #VOLUME /var/jenkins_home
 
-USER jenkins
-RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
+#USER jenkins
+#RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
