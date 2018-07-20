@@ -10,10 +10,10 @@ import subprocess
 import time
 
 # add jenkins user to sudoers
-jenkins_sudoers = "jenkins	ALL=(ALL) NOPASSWD: ALL"
-sudoers_file = open('/etc/sudoers.d/jenkins', 'w')
-sudoers_file.write(jenkins_sudoers)
-sudoers_file.close()
+#jenkins_sudoers = "jenkins	ALL=(ALL) NOPASSWD: ALL"
+#sudoers_file = open('/etc/sudoers.d/jenkins', 'w')
+#sudoers_file.write(jenkins_sudoers)
+#sudoers_file.close()
 
 
 # startup the jenkins service
