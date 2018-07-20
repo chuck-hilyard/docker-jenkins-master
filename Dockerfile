@@ -19,6 +19,7 @@ COPY --chown=root aws_codebuild /root/.ssh/id_rsa
 COPY --chown=jenkins aws_codebuild /var/jenkins_home/.ssh/id_rsa
 
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
@@ -26,6 +27,5 @@ RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 #VOLUME /var/jenkins_home
 
 USER jenkins
-RUN ssh-keyscan github.com >> /var/jenkins_home/.ssh/known_hosts
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
