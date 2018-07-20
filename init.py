@@ -29,7 +29,7 @@ while i < len(suggested_plugins):
   i += 1
 
 # install build/test software
-subprocess.run(["curl", "-sL", "https://deb.nodesource.com/setup_10.x", "|", "bash -"])
+subprocess.run(["curl -sL https://deb.nodesource.com/setup_10.x |bash -"])
 subprocess.run(["apt-get", "install", "-y", "nodejs"])
 # TODO: verify npm is installed
 
