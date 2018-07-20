@@ -9,13 +9,6 @@ import requests
 import subprocess
 import time
 
-# add jenkins user to sudoers
-#jenkins_sudoers = "jenkins	ALL=(ALL) NOPASSWD: ALL"
-#sudoers_file = open('/etc/sudoers.d/jenkins', 'w')
-#sudoers_file.write(jenkins_sudoers)
-#sudoers_file.close()
-
-
 # startup the jenkins service
 params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
 jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
