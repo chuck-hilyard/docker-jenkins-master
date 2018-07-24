@@ -1,2 +1,2 @@
 import jenkins.model.*
-Jenkins.instance.setNumExecutors(2)
+Jenkins.instance.setNumExecutors(0)

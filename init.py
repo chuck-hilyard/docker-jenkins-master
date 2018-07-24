@@ -59,6 +59,7 @@ for repo in f:
   else:
     BRANCH = "master"
   try:
+	  # ********* don't need to clone the repo, just place the config.xml file
     REPO_CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
     subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH, "--depth", "1"])
   except:
