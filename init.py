@@ -77,6 +77,11 @@ for repo in f:
 
 # process template_credentials.xml
 try:
+  private_key_file = open('/tmp/docker-jenkins-master/id_rsa', 'r')
+  PRIVATE_KEY = private_key_file.read()
+except FileNotFoundError as e:
+  print("private key file not found")
+try:
   template_credentials_file = open('/tmp/docker-jenkins-master/template_credentials.xml', 'r')
   template_credentials_string = template_credentials_file.read()
   template_credentials_file.close()
