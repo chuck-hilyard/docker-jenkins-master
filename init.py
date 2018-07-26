@@ -80,6 +80,10 @@ try:
   private_key_file = open('/var/jenkins_home/.ssh/id_rsa', 'r')
   PRIVATE_KEY_TMP = private_key_file.read()
   PRIVATE_KEY = PRIVATE_KEY_TMP.strip()
+	print("********************************************************************************")
+	print("PRIVATE KEY is ", type(PRIVATE_KEY))
+	print("PRIVATE KEY: {}".format(PRIVATE_KEY))
+	print("********************************************************************************")
 except FileNotFoundError as e:
   print("private key file not found")
 try:
