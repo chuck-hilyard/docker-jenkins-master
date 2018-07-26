@@ -83,7 +83,8 @@ except FileNotFoundError as e:
   print("private key file not found")
 try:
   template_credentials_file = open('/tmp/docker-jenkins-master/template_credentials.xml', 'r')
-  template_credentials_string = template_credentials_file.read()
+  template_credentials_string_tmp = template_credentials_file.read()
+  template_credentials_string = template_credentials_string_tmp.strip()
   template_credentials_file.close()
   formatted_template = template_credentials_string.format(PRIVATE_KEY=PRIVATE_KEY)
   credentials_xml_file = open('/var/jenkins_home/credentials.xml', 'w')
