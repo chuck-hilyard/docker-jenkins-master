@@ -59,7 +59,7 @@ for repo in f:
   else:
     BRANCH = "master"
   try:
-	  # ********* don't need to clone the repo, just place the config.xml file
+    # ********* don't need to clone the repo, just place the config.xml file
     REPO_CONFIG_FILE_DIR = "/var/jenkins_home/jobs/{}/config.xml".format(REPO_NAME)
     subprocess.run(["git", "clone", REPO_URL, TARGET_FOLDER, "--branch", BRANCH, "--depth", "1"])
   except:
@@ -74,6 +74,18 @@ for repo in f:
     repo_config_xml.close()
   except FileNotFoundError as e:
     print("file copy to {} failed".format(REPO_CONFIG_FILE_DIR))
+
+# process template_credentials.xml
+try:
+  template_credentials_file = open('/tmp/docker-jenkins-master/template_credentials.xml', 'r')
+  template_credentials_string = template_credentials_file.read()
+  template_credentials_file.close()
+  formatted_template = template_credentials_string.format(PRIVATE_KEY=PRIVATE_KEY)
+  credentials_xml_file = open('/var/jenkins_home/credentials.xml', 'w')
+  credentials_xml_file.write(formatted_template)
+  credentials_xml_file.close()
+except FileNotFoundError as e:
+  print("file copy to credentials.xml failed")
 
 # after all the changes, hit restart
 subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
