@@ -80,10 +80,6 @@ try:
   private_key_file = open('/var/jenkins_home/.ssh/id_rsa', 'r')
   PRIVATE_KEY_TMP = private_key_file.read()
   PRIVATE_KEY = PRIVATE_KEY_TMP.strip('\n')
-  print("********************************************************************************")
-  print("PRIVATE KEY is ", type(PRIVATE_KEY))
-  print("PRIVATE KEY: {}".format(PRIVATE_KEY))
-  print("********************************************************************************")
 except FileNotFoundError as e:
   print("private key file not found")
 try:
@@ -92,6 +88,9 @@ try:
   template_credentials_string = template_credentials_string_tmp.strip()
   template_credentials_file.close()
   formatted_template = template_credentials_string.format(PRIVATE_KEY=PRIVATE_KEY)
+  print("formatted_template is ", type(formatted_template))
+  print("formatted_template output\n")
+  print(formatted_template)
   credentials_xml_file = open('/var/jenkins_home/credentials.xml', 'w')
   credentials_xml_file.write(formatted_template)
   credentials_xml_file.close()
