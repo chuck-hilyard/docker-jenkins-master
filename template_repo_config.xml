@@ -27,6 +27,8 @@
       </branches>
       <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
       <submoduleCfg class="list"/>
+      <extensions>
+        <hudson.plugins.git.extensions.impl.WipeWorkspace/>
       <extensions/>
     </scm>
     <scriptPath>Jenkinsfile</scriptPath>

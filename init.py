@@ -10,7 +10,7 @@ import subprocess
 import time
 
 # startup the jenkins service
-params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '/usr/share/jenkins/jenkins.war']
+params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '-Dpermissive-script-security.enabled=true', '/usr/share/jenkins/jenkins.war']
 jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
 
 # install the suggested and desired plugins list
