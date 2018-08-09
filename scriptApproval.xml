@@ -5,6 +5,9 @@
     <string>new java.io.File java.lang.String</string>
     <string>staticMethod java.lang.System getProperty java.lang.String</string>
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods readLines java.io.File</string>
+    <string>method groovy.text.Template make java.util.Map</string>
+    <string>method groovy.text.TemplateEngine createTemplate java.lang.String</string>
+    <string>new groovy.text.StreamingTemplateEngine</string>
   </approvedSignatures>
   <aclApprovedSignatures/>
   <approvedClasspathEntries/>
