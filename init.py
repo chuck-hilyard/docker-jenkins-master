@@ -53,6 +53,7 @@ for repo in f:
   REPO_URL = repo.split("~",1)[1].rstrip('\n')
   TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
   url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+  print("target url is ", url)
   response = requests.get(url)
   if response.status_code == 200:
     BRANCH = response.text
