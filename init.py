@@ -94,7 +94,6 @@ def install_software():
 
 
 def main():
-
   # dumb method to keep the this.process alive (may not be needed in a main loop)
   #jenkins_start.wait()
   while True:
