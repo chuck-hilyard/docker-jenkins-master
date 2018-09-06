@@ -97,7 +97,7 @@ def main():
   # dumb method to keep the this.process alive (may not be needed in a main loop)
   #jenkins_start.wait()
   while True:
-    print("main loop")
+    print("main loop 2")
     time.sleep(120)
     print("slept")
 
