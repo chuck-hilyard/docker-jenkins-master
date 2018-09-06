@@ -100,6 +100,7 @@ def main():
   while True:
     print("main loop")
     time.sleep(120)
+    print("slept")
 
 
 if __name__ == '__main__':
