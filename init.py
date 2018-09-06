@@ -4,7 +4,9 @@
 # installs plugins
 # adds github based projects to jenkins/jobs
 
+import consulate
 import http.client
+import jenkins
 import requests
 import subprocess
 import time
