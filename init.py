@@ -99,9 +99,10 @@ def main():
   #jenkins_start.wait()
   while True:
     print("main loop")
-  time.sleep(60)
+    time.sleep(120)
 
 
 if __name__ == '__main__':
   jenkins_start()
+  install_software()
   main()
