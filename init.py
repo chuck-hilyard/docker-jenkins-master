@@ -125,6 +125,7 @@ def scrape_consul():
     raw_id      = x["Address"]
     raw_address = x["Address"]
     raw_port    = x["ServicePort"]
+    print("ID IS A ", type(id))
     id = raw_id.rstrip()
     address = raw_address.rstrip()
     port = raw_port.rstrip()
