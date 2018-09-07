@@ -134,7 +134,7 @@ def main():
   while True:
     print("main loop")
     scrape_consul()
-    time.sleep(120)
+    time.sleep(30)
 
 
 if __name__ == '__main__':
