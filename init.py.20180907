@@ -92,46 +92,14 @@ def install_software():
   # after all the changes, hit restart
   subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
-def add_to_master(id, address, port):
-  print("adding server to jenkins master: ", id, address, port)
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
-  params = {
-    'port': port,
-    'username': 'jenkins',
-    'credentialsId': 'jenkins-credential-id',
-    'host': address
-  }
-  server.create_node(
-    id,
-    nodeDescription = "test slave node",
-    remoteFS        = "/var/jenkins_home",
-    labels          = "common",
-    exclusive       = False,
-    launcher        = jenkins.LAUNCHER_SSH,
-    launcher_params = params )
-
-def scrape_consul():
-  print("scraping consul")
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  response = requests.get(url)
-
-  if response.status_code != 200:
-    print("consul scrape failed!  waiting for next run")
-
-  for x in response.json():
-    id      = x["ID"]
-    address = x["Address"]
-    port    = x["ServicePort"]
-    add_to_master(id, address, port)
-
 
 def main():
   # dumb method to keep the this.process alive (may not be needed in a main loop)
   #jenkins_start.wait()
   while True:
-    print("main loop")
+    print("main loop 2")
     time.sleep(120)
-    scrape_consul()
+    print("scraping consul")
 
 
 if __name__ == '__main__':
