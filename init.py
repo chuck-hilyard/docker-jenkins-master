@@ -111,16 +111,19 @@ def add_to_master(id, address, port):
       launcher        = jenkins.LAUNCHER_SSH,
       launcher_params = params )
   except:
-    print("jenkins general exception - need to see if this is the LB")
+    print("jenkins general exception")
 
 def remove_agent_from_master():
   print("checking for offline nodes")
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
-  server_list = server.get_nodes()
-  for dic in server_list:
-    if dic['offline'] == True:
-      print("{} is offline, removing".format(dic['name']))
-      server.delete_node(dic['name'])
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server_list = server.get_nodes()
+    for dic in server_list:
+      if dic['offline'] == True:
+        print("{} is offline, removing".format(dic['name']))
+        server.delete_node(dic['name'])
+  except:
+    print("jenkins general exception")
 
 def scrape_consul():
   print("scraping consul")
