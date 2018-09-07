@@ -99,7 +99,7 @@ def main():
   while True:
     print("main loop 2")
     time.sleep(120)
-    print("slept")
+    print("scraping consul")
 
 
 if __name__ == '__main__':
