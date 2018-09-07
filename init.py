@@ -113,6 +113,15 @@ def add_to_master(id, address, port):
   except:
     print("jenkins general exception - need to see if this is the LB")
 
+def remove_agent_from_master():
+  print("checking for offline nodes")
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  server_list = server.get_nodes()
+  for dic in server_list:
+    if dic['offline'] == True:
+      print("{} is offline, removing".format(dic['name']))
+      server.delete_node(dic['name'])
+
 def scrape_consul():
   print("scraping consul")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
@@ -134,7 +143,8 @@ def main():
   while True:
     print("main loop")
     scrape_consul()
-    time.sleep(30)
+    remove_agent_from_master()
+    time.sleep(60)
 
 
 if __name__ == '__main__':
