@@ -130,8 +130,8 @@ def main():
   #jenkins_start.wait()
   while True:
     print("main loop")
-    time.sleep(120)
     scrape_consul()
+    time.sleep(120)
 
 
 if __name__ == '__main__':
