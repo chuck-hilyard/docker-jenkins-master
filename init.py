@@ -101,14 +101,17 @@ def add_to_master(id, address, port):
     'credentialsId': 'jenkins-credential-id',
     'host': address
   }
-  server.create_node(
-    id,
-    nodeDescription = "test slave node",
-    remoteFS        = "/var/jenkins_home",
-    labels          = "common",
-    exclusive       = False,
-    launcher        = jenkins.LAUNCHER_SSH,
-    launcher_params = params )
+  try:
+    server.create_node(
+      id,
+      nodeDescription = "test slave node",
+      remoteFS        = "/var/jenkins_home",
+      labels          = "common",
+      exclusive       = False,
+      launcher        = jenkins.LAUNCHER_SSH,
+      launcher_params = params )
+  except:
+    print("jenkins general exception - need to see if this is the LB")
 
 def scrape_consul():
   print("scraping consul")
