@@ -140,4 +140,5 @@ def main():
 if __name__ == '__main__':
   jenkins_start()
   install_software()
+  print("starting main()")
   main()
