@@ -139,7 +139,7 @@ def scrape_consul():
     raw_port    = x["ServicePort"]
     id = raw_id.replace('\r','')
     address = raw_address.replace('\r','')
-    port = raw_port.replace('\r','')
+    port = str(raw_port.replace('\r',''))
     add_to_master(id, address, port)
 
 
