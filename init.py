@@ -112,19 +112,16 @@ def add_agent_to_master(id, address, port):
       launcher = jenkins.LAUNCHER_SSH,
       launcher_params = params )
   except Exception as e:
-    print("jenkins general exception: {}".format(e))
+    print("jenkins exception: {}".format(e))
 
 def remove_agent_from_master():
   print("checking for offline nodes")
-  try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
-    server_list = server.get_nodes()
-    for dic in server_list:
-      if dic['offline'] == True:
-        print("{} is offline, removing".format(dic['name']))
-        server.delete_node(dic['name'])
-  except:
-    print("jenkins general exception")
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  server_list = server.get_nodes()
+  for dic in server_list:
+    if dic['offline'] == True:
+      print("{} is offline, removing".format(dic['name']))
+      server.delete_node(dic['name'])
 
 def scrape_consul():
   print("scraping consul")
@@ -142,7 +139,6 @@ def scrape_consul():
     address = raw_address.replace('\r',"")
     port = raw_port
     add_agent_to_master(id, address, port)
-
 
 def main():
   # dumb method to keep the this.process alive (may not be needed in a main loop)
