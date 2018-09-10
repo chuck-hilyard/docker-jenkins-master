@@ -110,8 +110,8 @@ def add_to_master(id, address, port):
       exclusive       = False,
       launcher        = jenkins.LAUNCHER_SSH,
       launcher_params = params )
-  except:
-    print("jenkins general exception")
+  except Exception as e:
+    print("jenkins general exception: {}".format(e))
 
 def remove_agent_from_master():
   print("checking for offline nodes")
