@@ -136,10 +136,10 @@ def scrape_consul():
   for x in response.json():
     raw_id      = x["Address"]
     raw_address = x["Address"]
-    raw_port    = x["ServicePort"]
+    raw_port    = str(x["ServicePort"])
     id = raw_id.replace('\r','')
     address = raw_address.replace('\r','')
-    port = str(raw_port.replace('\r',''))
+    port = raw_port.replace('\r','')
     add_to_master(id, address, port)
 
 
