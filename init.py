@@ -92,23 +92,24 @@ def install_software():
   # after all the changes, hit restart
   subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
-def add_to_master(id, address, port):
+def add_agent_to_master(id, address, port):
   print("adding server to jenkins master: ", id, address, port)
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   params = {
     'port': port,
     'username': 'jenkins',
     'credentialsId': 'jenkins-credential-id',
-    'host': address
+    'host': address,
+    'javaPath': '/usr/bin/java'
   }
   try:
     server.create_node(
       id,
       nodeDescription = "test slave node",
-      remoteFS        = "/var/jenkins_home",
-      labels          = "common",
-      exclusive       = False,
-      launcher        = jenkins.LAUNCHER_SSH,
+      remoteFS = "/var/jenkins_home",
+      labels = "common",
+      exclusive = False,
+      launcher = jenkins.LAUNCHER_SSH,
       launcher_params = params )
   except Exception as e:
     print("jenkins general exception: {}".format(e))
@@ -134,13 +135,13 @@ def scrape_consul():
     print("consul scrape failed!  waiting for next run")
 
   for x in response.json():
-    raw_id      = x["Address"]
+    raw_id      = x["ID"]
     raw_address = x["Address"]
     raw_port    = x["ServicePort"]
     id = raw_id.replace('\r',"")
     address = raw_address.replace('\r',"")
     port = raw_port
-    add_to_master(id, address, port)
+    add_agent_to_master(id, address, port)
 
 
 def main():
