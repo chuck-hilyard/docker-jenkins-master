@@ -27,6 +27,6 @@ RUN chmod 640 /var/jenkins_home/.ssh/id_rsa
 
 #VOLUME /var/jenkins_home
 
-USER jenkins
+#USER jenkins
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
