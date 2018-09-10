@@ -137,8 +137,8 @@ def scrape_consul():
     raw_id      = x["Address"]
     raw_address = x["Address"]
     raw_port    = x["ServicePort"]
-    id = raw_id.replace('\r','')
-    address = raw_address.replace('\r','')
+    id = raw_id.replace('\r',"")
+    address = raw_address.replace('\r',"")
     port = raw_port
     add_to_master(id, address, port)
 
@@ -149,8 +149,8 @@ def main():
   while True:
     print("main loop")
     scrape_consul()
-    remove_agent_from_master()
     time.sleep(60)
+    remove_agent_from_master()
 
 
 if __name__ == '__main__':
