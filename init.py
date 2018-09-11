@@ -132,12 +132,13 @@ def scrape_consul():
     print("consul scrape failed!  waiting for next run")
 
   for x in response.json():
-    raw_id      = x["ID"]
+    #raw_id      = x["Address"]
     raw_address = x["Address"]
     raw_port    = x["ServicePort"]
-    id = raw_id.replace('\r',"")
+    #id = raw_id.replace('\r',"")
     address = raw_address.replace('\r',"")
     port = raw_port
+    id = "{}-{}".format(address, port)
     add_agent_to_master(id, address, port)
 
 def main():
