@@ -155,9 +155,9 @@ def scrape_consul_for_docker_engines():
 
   for x in response.json():
     raw_address = x["Address"]
-    raw_port    = x["ServicePort"]
+    #raw_port    = x["ServicePort"]
     address = raw_address.replace('\r',"")
-    port = raw_port
+    port = 22
     id = "{}-{}".format(address, port)
     add_docker_engine_to_master(id, address, port)
 
