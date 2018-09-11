@@ -114,6 +114,28 @@ def add_agent_to_master(id, address, port):
   except Exception as e:
     print("jenkins exception: {}".format(e))
 
+def add_docker_engine_to_master(id, address, port):
+  print("adding docker engine to jenkins master: ", id, address, port)
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  params = {
+    'port': port,
+    'username': 'jenkins',
+    'credentialsId': 'jenkins-credential-id',
+    'host': address,
+    'javaPath': '/usr/bin/java'
+  }
+  try:
+    server.create_node(
+      id,
+      nodeDescription = "jenkins agent docker-engine",
+      remoteFS = "/var/jenkins_home",
+      labels = "docker-engine",
+      exclusive = False,
+      launcher = jenkins.LAUNCHER_SSH,
+      launcher_params = params )
+  except Exception as e:
+    print("jenkins exception: {}".format(e))
+
 def remove_agent_from_master():
   print("checking for offline nodes")
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
@@ -123,8 +145,24 @@ def remove_agent_from_master():
       print("{} is offline, removing".format(dic['name']))
       server.delete_node(dic['name'])
 
-def scrape_consul():
-  print("scraping consul")
+def scrape_consul_for_docker_engines():
+  print("scraping consul for docker engines")
+  url = "http://consul:8500/v1/catalog/service/consul"
+  response = requests.get(url)
+
+  if response.status_code != 200:
+    print("consul scrape failed!  waiting for next run")
+
+  for x in response.json():
+    raw_address = x["Address"]
+    raw_port    = x["ServicePort"]
+    address = raw_address.replace('\r',"")
+    port = raw_port
+    id = "{}-{}".format(address, port)
+    add_docker_engine_to_master(id, address, port)
+
+def scrape_consul_for_agents():
+  print("scraping consul for agents")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   response = requests.get(url)
 
@@ -132,10 +170,8 @@ def scrape_consul():
     print("consul scrape failed!  waiting for next run")
 
   for x in response.json():
-    #raw_id      = x["Address"]
     raw_address = x["Address"]
     raw_port    = x["ServicePort"]
-    #id = raw_id.replace('\r',"")
     address = raw_address.replace('\r',"")
     port = raw_port
     id = "{}-{}".format(address, port)
@@ -144,7 +180,9 @@ def scrape_consul():
 def main():
   while True:
     print("main loop")
-    scrape_consul()
+    scrape_consul_for_agents()
+    time.sleep(60)
+    scrape_consul_for_docker_engines()
     time.sleep(60)
     remove_agent_from_master()
 
