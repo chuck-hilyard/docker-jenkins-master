@@ -141,8 +141,6 @@ def scrape_consul():
     add_agent_to_master(id, address, port)
 
 def main():
-  # dumb method to keep the this.process alive (may not be needed in a main loop)
-  #jenkins_start.wait()
   while True:
     print("main loop")
     scrape_consul()
