@@ -147,7 +147,9 @@ def remove_agent_from_master():
 
 def scrape_consul_for_docker_engines():
   print("scraping consul for docker engines")
-  url = "http://consul:8500/v1/catalog/service/consul"
+  # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
+  # it should accurately reflect the available nodes available for docker engine work
+  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   response = requests.get(url)
 
   if response.status_code != 200:
