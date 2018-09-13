@@ -39,6 +39,7 @@ def install_software():
   subprocess.run(["sudo", "apt-get", "install", "-y", "awscli"])
 
   # add github repos as jobs to this jenkins server
+  # (this vestige creats a jenkins-init job which is used to verify a successful deploy of jenkins-master)
   subprocess.run(["ssh-keyscan", "github.com", ">>", "/var/jenkins_home/.ssh/known_hosts"])
   f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
   repos = []
@@ -127,9 +128,9 @@ def add_docker_engine_to_master(id, address, port):
   try:
     server.create_node(
       id,
-      nodeDescription = "jenkins agent docker-engine",
+      nodeDescription = "jenkins agent docker builds",
       remoteFS = "/var/jenkins_home",
-      labels = "docker-engine",
+      labels = "docker-builds",
       exclusive = False,
       launcher = jenkins.LAUNCHER_SSH,
       launcher_params = params )
@@ -179,6 +180,22 @@ def scrape_consul_for_agents():
     id = "{}-{}".format(address, port)
     add_agent_to_master(id, address, port)
 
+def scrape_consul_deploy_jobs():
+  print("scraping consul for deploy jobs")
+  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  response = requests.get(url)
+
+  if response.status_code != 200:
+    print("consul scrape failed!  waiting for next run")
+
+  for x in response.json():
+    raw_address = x["Address"]
+    raw_port    = x["ServicePort"]
+    address = raw_address.replace('\r',"")
+    port = raw_port
+    id = "{}-{}".format(address, port)
+    add_agent_to_master(id, address, port)
+
 def main():
   while True:
     print("main loop")
@@ -186,11 +203,12 @@ def main():
     time.sleep(60)
     scrape_consul_for_docker_engines()
     time.sleep(60)
+    #scrape_consul_for_deploy_jobs()
+    time.sleep(60)
     remove_agent_from_master()
 
 
 if __name__ == '__main__':
   jenkins_start()
   install_software()
-  print("starting main()")
   main()
