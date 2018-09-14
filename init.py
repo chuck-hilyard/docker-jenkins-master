@@ -7,9 +7,80 @@
 import consulate
 import http.client
 import jenkins
+import json
 import requests
 import subprocess
 import time
+
+BASE_CREDENTIALS_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
+<com.cloudbees.plugins.credentials.SystemCredentialsProvider plugin="credentials@2.1.18">
+  <domainCredentialsMap class="hudson.util.CopyOnWriteMap$Hash">
+    <entry>
+      <com.cloudbees.plugins.credentials.domains.Domain>
+        <specifications/>
+      </com.cloudbees.plugins.credentials.domains.Domain>
+      <java.util.concurrent.CopyOnWriteArrayList/>
+    </entry>
+    <entry>
+      <com.cloudbees.plugins.credentials.domains.Domain>
+        <name>initial</name>
+        <description>initial domain</description>
+        <specifications/>
+      </com.cloudbees.plugins.credentials.domains.Domain>
+      <list>
+        <com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey plugin="ssh-credentials@1.14">
+          <scope>GLOBAL</scope>
+          <id>jenkins-credential-id</id>
+          <description></description>
+          <username>jenkins</username>
+          <privateKeySource class="com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource">
+            <privateKey>{PRIVATE_KEY}</privateKey>
+          </privateKeySource>
+        </com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey>
+      </list>
+    </entry>
+  </domainCredentialsMap>
+</com.cloudbees.plugins.credentials.SystemCredentialsProvider>'''
+
+BASE_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.23">
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <hudson.triggers.SCMTrigger>
+          <spec>* * * * *</spec>
+          <ignorePostCommitHooks>false</ignorePostCommitHooks>
+        </hudson.triggers.SCMTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.54">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.1">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>{REPO_URL}</url>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>*/{BRANCH}</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="list"/>
+      <extensions>
+        <hudson.plugins.git.extensions.impl.WipeWorkspace/>
+      </extensions>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath>
+    <lightweight>false</lightweight>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>'''
 
 def jenkins_start():
   # startup the jenkins service
@@ -180,21 +251,37 @@ def scrape_consul_for_agents():
     id = "{}-{}".format(address, port)
     add_agent_to_master(id, address, port)
 
-def scrape_consul_deploy_jobs():
+def scrape_consul_for_deploy_jobs():
   print("scraping consul for deploy jobs")
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = 'http://consul:8500/v1/kv/?keys&separator=/'
   response = requests.get(url)
+  toplevel_keys_json = json.loads(response.text)
 
-  if response.status_code != 200:
-    print("consul scrape failed!  waiting for next run")
+  # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
+  # probably not an app that we should deploy w/ jenkins
+  for x in toplevel_keys_json:
+      project_name = x.strip('/')
+      branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+      response_branch_url = requests.get(branch_url)
+      test1 = response_branch_url.status_code
+      branch = response_branch_url.text
 
-  for x in response.json():
-    raw_address = x["Address"]
-    raw_port    = x["ServicePort"]
-    address = raw_address.replace('\r',"")
-    port = raw_port
-    id = "{}-{}".format(address, port)
-    add_agent_to_master(id, address, port)
+      github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+      response_github_url = requests.get(github_url)
+      test2 = response_github_url.status_code
+      github_repo = response_github_url.text
+      if test1 == 200 and test2 == 200:
+        try:
+          create_jenkins_job(project_name, github_repo, branch)
+        except jenkins.JenkinsException as e:
+          print("exception {}".format(e))
+
+def create_jenkins_job(name, github_repo, branch):
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  # format the job configuration template
+  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
+  # if jobs exists, delete it the create
+  server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def main():
   while True:
@@ -203,7 +290,7 @@ def main():
     time.sleep(60)
     scrape_consul_for_docker_engines()
     time.sleep(60)
-    #scrape_consul_for_deploy_jobs()
+    scrape_consul_for_deploy_jobs()
     time.sleep(60)
     remove_agent_from_master()
 
