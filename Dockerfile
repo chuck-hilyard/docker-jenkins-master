@@ -25,7 +25,7 @@ COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
-RUN chmod 600 /var/jenkins_home/.ssh/id_rsa
+#RUN chmod 600 /var/jenkins_home/.ssh/id_rsa
 
 #VOLUME /var/jenkins_home
 
