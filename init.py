@@ -109,7 +109,7 @@ def install_software():
   time.sleep(15)
   subprocess.run(["sudo", "apt-get", "install", "-y", "awscli"])
   time.sleep(15)
-  subprocess.run(["chmod", "600", "/var/jenkins_home/.ssh/id_rsa"])
+  subprocess.run(["chmod", "600", "/var/jenkins_home/.ssh/id_rsa", "/root/.ssh/id_rsa"])
 
   # add github repos as jobs to this jenkins server
   # (this vestige creats a jenkins-init job which is used to verify a successful deploy of jenkins-master)
