@@ -282,7 +282,7 @@ def scrape_consul_for_deploy_jobs():
 def update_jenkins_job(name, github_repo, branch):
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
-  server.update_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def create_jenkins_job(name, github_repo, branch):
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
