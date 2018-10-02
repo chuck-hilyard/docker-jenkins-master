@@ -276,7 +276,13 @@ def scrape_consul_for_deploy_jobs():
         try:
           create_jenkins_job(project_name, github_repo, branch)
         except jenkins.JenkinsException as e:
-          print("exception {}".format(e))
+          print("found {}, updating".format(e))
+          update_jenkins_job(project_name, github_repo, branch)
+
+def update_jenkins_job(name, github_repo, branch):
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
+  server.update_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def create_jenkins_job(name, github_repo, branch):
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
@@ -289,12 +295,13 @@ def main():
   while True:
     print("main loop")
     scrape_consul_for_agents()
-    time.sleep(60)
+    time.sleep(30)
     scrape_consul_for_docker_engines()
-    time.sleep(60)
+    time.sleep(30)
     scrape_consul_for_deploy_jobs()
-    time.sleep(60)
+    time.sleep(30)
     remove_agent_from_master()
+    time.sleep(30)
 
 
 if __name__ == '__main__':
