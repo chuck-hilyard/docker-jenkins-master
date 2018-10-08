@@ -9,6 +9,7 @@ docker-commons
 docker-workflow
 durable-task
 emailext-template
+fstrigger
 git
 git-client
 git-server

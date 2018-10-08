@@ -53,6 +53,18 @@ BASE_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
           <spec>* * * * *</spec>
           <ignorePostCommitHooks>false</ignorePostCommitHooks>
         </hudson.triggers.SCMTrigger>
+        <org.jenkinsci.plugins.fstrigger.triggers.FileNameTrigger plugin="fstrigger@0.39">
+          <spec>* * * * *</spec>
+          <fileInfo>
+            <org.jenkinsci.plugins.fstrigger.triggers.FileNameTriggerInfo>
+              <filePathPattern>config.xml</filePathPattern>
+              <strategy>LATEST</strategy>
+              <inspectingContentFile>false</inspectingContentFile>
+              <doNotCheckLastModificationDate>false</doNotCheckLastModificationDate>
+              <contentFileTypes/>
+            </org.jenkinsci.plugins.fstrigger.triggers.FileNameTriggerInfo>
+          </fileInfo>
+        </org.jenkinsci.plugins.fstrigger.triggers.FileNameTrigger>
       </triggers>
     </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
   </properties>
