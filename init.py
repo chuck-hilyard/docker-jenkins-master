@@ -112,7 +112,7 @@ def install_software():
   subprocess.run(["chmod", "600", "/var/jenkins_home/.ssh/id_rsa", "/root/.ssh/id_rsa"])
 
   # add github repos as jobs to this jenkins server
-  # (this vestige creats a jenkins-init job which is used to verify a successful deploy of jenkins-master)
+  # (this vestige creates a jenkins-init job which is used to verify a successful deploy of jenkins-master)
   subprocess.run(["ssh-keyscan", "github.com", ">>", "/var/jenkins_home/.ssh/known_hosts"])
   f = open('/tmp/docker-jenkins-master/repos.txt', 'r')
   repos = []

@@ -9,12 +9,12 @@ docker-commons
 docker-workflow
 durable-task
 emailext-template
-fstrigger
 git
 git-client
 git-server
 github-branch-source
 gradle
+http_request
 ldap
 matrix-auth
 matrix-project
