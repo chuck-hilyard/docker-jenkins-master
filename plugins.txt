@@ -23,6 +23,6 @@ s3
 saferestart
 scm-api
 ssh-credentials
-ssh-slaves
+file:///tmp/ssh-slaves.hpi
 token-macro
 xvnc
