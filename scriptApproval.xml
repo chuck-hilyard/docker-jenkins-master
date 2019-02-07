@@ -8,6 +8,24 @@
     <string>method groovy.text.Template make java.util.Map</string>
     <string>method groovy.text.TemplateEngine createTemplate java.lang.String</string>
     <string>new groovy.text.StreamingTemplateEngine</string>
+    <string>method groovy.text.TemplateEngine createTemplate java.lang.String</string>
+    <string>method org.apache.http.HttpEntity getContent</string>
+    <string>method org.apache.http.HttpEntityEnclosingRequest setEntity org.apache.http.HttpEntity</string>
+    <string>method org.apache.http.HttpMessage addHeader java.lang.String java.lang.String</string>
+    <string>method org.apache.http.HttpResponse getEntity</string>
+    <string>method org.apache.http.client.HttpClient execute org.apache.http.client.methods.HttpUriRequest</string>
+    <string>method org.apache.http.impl.client.HttpClientBuilder build</string>
+    <string>new groovy.json.JsonBuilder java.lang.Object</string>
+    <string>new java.io.BufferedReader java.io.Reader</string>
+    <string>new java.io.InputStreamReader java.io.InputStream</string>
+    <string>new org.apache.http.client.methods.HttpGet java.lang.String</string>
+    <string>new org.apache.http.client.methods.HttpPost java.lang.String</string>
+    <string>new org.apache.http.entity.StringEntity java.lang.String</string>
+    <string>staticMethod java.net.URLEncoder encode java.lang.String</string>
+    <string>staticMethod org.apache.http.impl.client.HttpClientBuilder create</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods eachLine java.io.File groovy.lang.Closure</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.BufferedReader</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.net.URL</string>
   </approvedSignatures>
   <aclApprovedSignatures/>
   <approvedClasspathEntries/>
