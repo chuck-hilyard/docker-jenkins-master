@@ -1,6 +1,7 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
 FROM jenkins/jenkins:latest
+COPY Docker-entrypoint.sh /usr/local/bin/
 
 USER root
 
@@ -32,4 +33,5 @@ RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 
 #USER jenkins
 
+ENTRYPOINT ["Docker-entrypoint.sh"]
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
