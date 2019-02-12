@@ -1,6 +1,7 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
 FROM jenkins/jenkins:latest
+COPY Docker-entrypoint.sh /usr/local/bin/
 
 USER root
 
@@ -24,7 +25,6 @@ COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
 COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
-RUN cd /var/jenkins_home; git clone https://github.com/chuck-hilyard/jenkins-rl-bin.git
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 #RUN chmod 600 /var/jenkins_home/.ssh/id_rsa
@@ -33,4 +33,5 @@ RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 
 #USER jenkins
 
+ENTRYPOINT ["Docker-entrypoint.sh"]
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
