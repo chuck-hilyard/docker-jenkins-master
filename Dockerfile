@@ -24,7 +24,7 @@ COPY --chown=jenkins id_rsa /var/jenkins_home/.ssh/id_rsa
 COPY --chown=root known_hosts /root/.ssh/known_hosts
 COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
 COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
-COPY jenkins.war.2.164 /usr/share/jenkins/jenkins.war
+#COPY jenkins.war.2.164 /usr/share/jenkins/jenkins.war
 
 RUN cd /tmp; git clone https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
