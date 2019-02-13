@@ -5,7 +5,9 @@ COPY jenkins.war.2.164 /usr/share/jenkins/jenkins.war
 
 USER root
 
-RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding 
+# unable to download script-security, isolating which plugin requires that
+#RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding 
+RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean 
 
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
