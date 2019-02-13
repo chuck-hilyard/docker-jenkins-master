@@ -12,6 +12,8 @@ import requests
 import subprocess
 import time
 
+from socket import gaierror
+
 BASE_CREDENTIALS_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
 <com.cloudbees.plugins.credentials.SystemCredentialsProvider plugin="credentials@2.1.18">
   <domainCredentialsMap class="hudson.util.CopyOnWriteMap$Hash">
@@ -122,7 +124,12 @@ def install_software():
     TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
     url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
     print("target url is ", url)
-    response = requests.get(url)
+    try:
+      response = requests.get(url)
+    except socket.gaierror as ex:
+      print("exception talking to consul: {}".format(ex))
+    except:
+      print("unknown exception talking to consul")
     if response.status_code == 200:
       BRANCH = response.text
     else:
