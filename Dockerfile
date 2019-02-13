@@ -1,11 +1,13 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
 FROM jenkins/jenkins:latest
-COPY Docker-entrypoint.sh /usr/local/bin/
+COPY jenkins.war.2.151 /usr/share/jenkins/jenkins.war
+
 
 USER root
 
-RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow blueocean credentials-binding 
+# removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
+RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow credentials-binding 
 
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin

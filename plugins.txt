@@ -1,5 +1,6 @@
 ant
 authentication-tokens
+blueocean
 branch-api
 build-timeout
 ssh-agent
