@@ -3,6 +3,7 @@
 FROM jenkins/jenkins:latest
 COPY jenkins.war.2.151 /usr/share/jenkins/jenkins.war
 
+
 USER root
 
 # removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
@@ -34,4 +35,5 @@ RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 
 #USER jenkins
 
+ENTRYPOINT ["Docker-entrypoint.sh"]
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
