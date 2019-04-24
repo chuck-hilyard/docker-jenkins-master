@@ -126,11 +126,10 @@ def install_software():
     print("target url is ", url)
     try:
       response = requests.get(url)
-    except socket.gaierror as ex:
-      print("exception talking to consul: {}".format(ex))
-    except:
-      print("unknown exception talking to consul")
-    if response.status_code == 200:
+    except requests.exceptions.RequestException as e:
+      print("exception talking to consul: {}".format(e))
+      break
+    if isinstance(response, requests) and response.status_code == 200:
       BRANCH = response.text
     else:
       BRANCH = "master"
@@ -220,7 +219,10 @@ def add_docker_engine_to_master(id, address, port):
 def remove_agent_from_master():
   print("checking for offline nodes")
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
-  server_list = server.get_nodes()
+  try:
+    server_list = server.get_nodes()
+  except jenkins.JenkinsException as ex:
+    return
   for dic in server_list:
     if dic['offline'] == True:
       print("{} is offline, removing".format(dic['name']))
@@ -231,60 +233,67 @@ def scrape_consul_for_docker_engines():
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  response = requests.get(url)
-
-  if response.status_code != 200:
-    print("consul scrape failed!  waiting for next run")
-
-  for x in response.json():
-    raw_address = x["Address"]
-    #raw_port    = x["ServicePort"]
-    address = raw_address.replace('\r',"")
-    port = 22
-    id = "{}-{}".format(address, port)
-    add_docker_engine_to_master(id, address, port)
+  try:
+    response = requests.get(url)
+  except requests.exceptions.RequestException as e:
+    print("exception talking to consul: {}".format(e))
+    return
+  if isinstance(response, requests) and response.status_code == 200:
+    for x in response.json():
+      raw_address = x["Address"]
+      #raw_port    = x["ServicePort"]
+      address = raw_address.replace('\r',"")
+      port = 22
+      id = "{}-{}".format(address, port)
+      add_docker_engine_to_master(id, address, port)
 
 def scrape_consul_for_agents():
   print("scraping consul for agents")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  response = requests.get(url)
-
-  if response.status_code != 200:
-    print("consul scrape failed!  waiting for next run")
-
-  for x in response.json():
-    raw_address = x["Address"]
-    raw_port    = x["ServicePort"]
-    address = raw_address.replace('\r',"")
-    port = raw_port
-    id = "{}-{}".format(address, port)
-    add_agent_to_master(id, address, port)
+  try:
+    response = requests.get(url)
+  except requests.exceptions.RequestException as e:
+    print("exception talking to consul: {}".format(e))
+    return
+  if isinstance(response, requests) and response.status_code == 200:
+    for x in response.json():
+      raw_address = x["Address"]
+      raw_port    = x["ServicePort"]
+      address = raw_address.replace('\r',"")
+      port = raw_port
+      id = "{}-{}".format(address, port)
+      add_agent_to_master(id, address, port)
 
 def scrape_consul_for_deploy_jobs():
   print("scraping consul for deploy jobs")
   url = 'http://consul:8500/v1/kv/?keys&separator=/'
-  response = requests.get(url)
-  toplevel_keys_json = json.loads(response.text)
+  try:
+    response = requests.get(url)
+  except requests.exceptions.RequestException as e:
+    print("exception talking to consul: {}".format(e))
+    return
+  if isinstance(response, requests) and response.status_code == 200:
+    toplevel_keys_json = json.loads(response.text)
 
-  # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
-  # probably not an app that we should deploy w/ jenkins
-  for x in toplevel_keys_json:
-      project_name = x.strip('/')
-      branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
-      response_branch_url = requests.get(branch_url)
-      test1 = response_branch_url.status_code
-      branch = response_branch_url.text
+    # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
+    # probably not an app that we should deploy w/ jenkins
+    for x in toplevel_keys_json:
+        project_name = x.strip('/')
+        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        response_branch_url = requests.get(branch_url)
+        test1 = response_branch_url.status_code
+        branch = response_branch_url.text
 
-      github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
-      response_github_url = requests.get(github_url)
-      test2 = response_github_url.status_code
-      github_repo = response_github_url.text
-      if test1 == 200 and test2 == 200:
-        try:
-          create_jenkins_job(project_name, github_repo, branch)
-        except jenkins.JenkinsException as e:
-          print("found {}, updating".format(e))
-          update_jenkins_job(project_name, github_repo, branch)
+        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        response_github_url = requests.get(github_url)
+        test2 = response_github_url.status_code
+        github_repo = response_github_url.text
+        if test1 == 200 and test2 == 200:
+          try:
+            create_jenkins_job(project_name, github_repo, branch)
+          except jenkins.JenkinsException as e:
+            print("found {}, updating".format(e))
+            update_jenkins_job(project_name, github_repo, branch)
 
 def update_jenkins_job(name, github_repo, branch):
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
