@@ -37,7 +37,7 @@ RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
 #USER jenkins
 
 COPY init.py /tmp/docker-jenkins-master/init.py
-COPY Docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["Docker-entrypoint.sh"]
+COPY entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["entrypoint.sh"]
 
 CMD [ "python3", "-u", "/tmp/docker-jenkins-master/init.py" ]
