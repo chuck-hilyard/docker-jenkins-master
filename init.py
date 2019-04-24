@@ -126,10 +126,10 @@ def install_software():
     print("target url is ", url)
     try:
       response = requests.get(url)
-    except socket.gaierror as ex:
-      print("exception talking to consul: {}".format(ex))
-    except:
-      print("unknown exception talking to consul")
+    except requests.exceptions.RequestException as e:
+      print("exception talking to consul: {}".format(e))
+      print("RESPONSE STATUS CODE", response.status_code)
+      break
     if response.status_code == 200:
       BRANCH = response.text
     else:
