@@ -128,8 +128,8 @@ def install_software():
       response = requests.get(url)
     except requests.exceptions.RequestException as e:
       print("exception talking to consul: {}".format(e))
-      break
-    if isinstance(response, requests) and response.status_code == 200:
+      return
+    if response.status_code == 200:
       BRANCH = response.text
     else:
       BRANCH = "master"
@@ -238,7 +238,7 @@ def scrape_consul_for_docker_engines():
   except requests.exceptions.RequestException as e:
     print("exception talking to consul: {}".format(e))
     return
-  if isinstance(response, requests) and response.status_code == 200:
+  if response.status_code == 200:
     for x in response.json():
       raw_address = x["Address"]
       #raw_port    = x["ServicePort"]
@@ -255,7 +255,7 @@ def scrape_consul_for_agents():
   except requests.exceptions.RequestException as e:
     print("exception talking to consul: {}".format(e))
     return
-  if isinstance(response, requests) and response.status_code == 200:
+  if response.status_code == 200:
     for x in response.json():
       raw_address = x["Address"]
       raw_port    = x["ServicePort"]
@@ -272,7 +272,7 @@ def scrape_consul_for_deploy_jobs():
   except requests.exceptions.RequestException as e:
     print("exception talking to consul: {}".format(e))
     return
-  if isinstance(response, requests) and response.status_code == 200:
+  if response.status_code == 200:
     toplevel_keys_json = json.loads(response.text)
 
     # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
