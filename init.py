@@ -174,7 +174,11 @@ def install_software():
 
 def add_agent_to_master(id, address, port):
   print("adding server to jenkins master: ", id, address, port)
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding server to jenkins master: {}".format(ex))
+    return
   params = {
     'port': port,
     'username': 'jenkins',
@@ -196,7 +200,11 @@ def add_agent_to_master(id, address, port):
 
 def add_docker_engine_to_master(id, address, port):
   print("adding docker engine to jenkins master: ", id, address, port)
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding server to jenkins master: {}".format(ex))
+    return
   params = {
     'port': port,
     'username': 'jenkins',
@@ -218,7 +226,11 @@ def add_docker_engine_to_master(id, address, port):
 
 def remove_agent_from_master():
   print("checking for offline nodes")
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding server to jenkins master: {}".format(ex))
+    return
   try:
     server_list = server.get_nodes()
   except jenkins.JenkinsException as ex:
@@ -296,16 +308,27 @@ def scrape_consul_for_deploy_jobs():
             update_jenkins_job(project_name, github_repo, branch)
 
 def update_jenkins_job(name, github_repo, branch):
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding server to jenkins master: {}".format(ex))
+    return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def create_jenkins_job(name, github_repo, branch):
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding server to jenkins master: {}".format(ex))
+    return
   # format the job configuration template
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
   # if jobs exists, delete it the create
   server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+
+def remove_jenkins_job(name, github_repo, branch):
+  pass
 
 def main():
   while True:
