@@ -238,7 +238,11 @@ def remove_agent_from_master():
   for dic in server_list:
     if dic['offline'] == True:
       print("{} is offline, removing".format(dic['name']))
-      server.delete_node(dic['name'])
+      try:
+        server.delete_node(dic['name'])
+      except Exception as ex:
+        print("exception while removing {} from jenkins master".format(ex))
+        return
 
 def scrape_consul_for_docker_engines():
   print("scraping consul for docker engines")
