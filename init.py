@@ -304,6 +304,7 @@ def scrape_consul_for_deploy_jobs():
           deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
         except:
           print("failed trying to find DEPLOY_TYPE for {}".format(project_name))
+        print("DEPLOY_TYPE_URL: ", deploy_type_url)
 
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
