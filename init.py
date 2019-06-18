@@ -295,22 +295,28 @@ def scrape_consul_for_deploy_jobs():
     # probably not an app that we should deploy w/ jenkins
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
-        response_branch_url = requests.get(branch_url)
-        test1 = response_branch_url.status_code
-        branch = response_branch_url.text
+        #branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        #response_branch_url = requests.get(branch_url)
+        #test1 = response_branch_url.status_code
+        #branch = response_branch_url.text
 
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
-          deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+          response_deploy_type_url = requests.get(deploy_type_url)
         except:
-          print("failed trying to find DEPLOY_TYPE for {}".format(project_name))
-        print("DEPLOY_TYPE_URL: ", deploy_type_url)
-
+          print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
+          return
+        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        branch = response_branch_url.text
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
-        response_github_url = requests.get(github_url)
-        test2 = response_github_url.status_code
         github_repo = response_github_url.text
-        if test1 == 200 and test2 == 200:
+
+        #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        #response_github_url = requests.get(github_url)
+        #test2 = response_github_url.status_code
+        #github_repo = response_github_url.text
+        #if test1 == 200 and test2 == 200:
+        if response_deploy_type_url == 'gitflow':
           try:
             create_jenkins_job(project_name, github_repo, branch)
           except jenkins.JenkinsException as e:
