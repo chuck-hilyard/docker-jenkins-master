@@ -337,11 +337,19 @@ def update_jenkins_job(name, github_repo, branch):
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
+def remove_jenkins_job(project_name):
+  try:
+    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when removing job from jenkins master: {}".format(ex))
+    return
+  server.delete_job(project_name)
+
 def create_jenkins_job(name, github_repo, branch):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when adding job to jenkins master: {}".format(ex))
     return
   # format the job configuration template
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
