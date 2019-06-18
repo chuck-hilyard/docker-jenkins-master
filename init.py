@@ -320,6 +320,7 @@ def scrape_consul_for_deploy_jobs():
         #if test1 == 200 and test2 == 200:
         if response_deploy_type_url == 'gitflow':
           try:
+            print("create jenkins job for ", project_name)
             create_jenkins_job(project_name, github_repo, branch)
           except jenkins.JenkinsException as e:
             print("found {}, updating".format(e))
