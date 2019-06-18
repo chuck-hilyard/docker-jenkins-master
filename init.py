@@ -307,8 +307,10 @@ def scrape_consul_for_deploy_jobs():
           print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
           return
         branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
         #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
