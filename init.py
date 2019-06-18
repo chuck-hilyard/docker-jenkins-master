@@ -318,6 +318,7 @@ def scrape_consul_for_deploy_jobs():
         #test2 = response_github_url.status_code
         #github_repo = response_github_url.text
         #if test1 == 200 and test2 == 200:
+        print("project_name: ", project_name)
         print("response_deploy_type_url: ", response_deploy_type_url)
         if response_deploy_type_url == 'gitflow':
           try:
