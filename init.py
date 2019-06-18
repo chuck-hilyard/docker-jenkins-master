@@ -319,7 +319,7 @@ def scrape_consul_for_deploy_jobs():
         #github_repo = response_github_url.text
         #if test1 == 200 and test2 == 200:
         print("project_name: ", project_name)
-        print("response_deploy_type_url: ", response_deploy_type_url)
+        print("response_deploy_type_url: ", response_deploy_type_url.text)
         if response_deploy_type_url == 'gitflow':
           try:
             print("create jenkins job for ", project_name)
