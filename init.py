@@ -327,6 +327,8 @@ def scrape_consul_for_deploy_jobs():
           except jenkins.JenkinsException as e:
             print("found {}, updating".format(e))
             update_jenkins_job(project_name, github_repo, branch)
+        else:
+          remove_jenkins_job(project_name)
 
 def update_jenkins_job(name, github_repo, branch):
   try:
