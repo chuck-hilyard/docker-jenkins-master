@@ -331,8 +331,8 @@ def remove_jenkins_job(project_name):
   try:
     print("removing {} from project list".format(project_name))
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
-  except:
-    print("exception when removing job {} from jenkins master: {}".format(project_name))
+  except jenkins.NotFoundException as jnfe:
+    print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
   server.delete_job(project_name)
 
