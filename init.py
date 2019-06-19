@@ -341,6 +341,7 @@ def update_jenkins_job(name, github_repo, branch):
 
 def remove_jenkins_job(project_name):
   try:
+    print("removing {} from project list".format(project_name))
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
     print("exception when removing job from jenkins master: {}".format(ex))
