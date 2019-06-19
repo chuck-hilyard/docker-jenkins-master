@@ -291,15 +291,8 @@ def scrape_consul_for_deploy_jobs():
   if response.status_code == 200:
     toplevel_keys_json = json.loads(response.text)
 
-    # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
-    # probably not an app that we should deploy w/ jenkins
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        #branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
-        #response_branch_url = requests.get(branch_url)
-        #test1 = response_branch_url.status_code
-        #branch = response_branch_url.text
-
         deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
@@ -313,11 +306,6 @@ def scrape_consul_for_deploy_jobs():
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
-        #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
-        #response_github_url = requests.get(github_url)
-        #test2 = response_github_url.status_code
-        #github_repo = response_github_url.text
-        #if test1 == 200 and test2 == 200:
         print("project_name: ", project_name)
         print("response_deploy_type_url: ", response_deploy_type_url.text)
         if response_deploy_type_url.text == 'gitflow':
