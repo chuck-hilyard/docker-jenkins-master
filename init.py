@@ -358,9 +358,6 @@ def create_jenkins_job(name, github_repo, branch):
   # if jobs exists, delete it the create
   server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
-def remove_jenkins_job(name, github_repo, branch):
-  pass
-
 def main():
   while True:
     print("main loop")
