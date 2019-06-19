@@ -328,13 +328,13 @@ def update_jenkins_job(name, github_repo, branch):
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def remove_jenkins_job(project_name):
+  print("removing {} job from jenkins".format(project_name))
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   try:
-    print("removing {} from project list".format(project_name))
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server.delete_job(project_name)
   except jenkins.NotFoundException as jnfe:
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
-  server.delete_job(project_name)
 
 def create_jenkins_job(name, github_repo, branch):
   try:
