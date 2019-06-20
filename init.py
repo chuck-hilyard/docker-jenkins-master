@@ -291,25 +291,32 @@ def scrape_consul_for_deploy_jobs():
   if response.status_code == 200:
     toplevel_keys_json = json.loads(response.text)
 
-    # for each key found verify that it has a github repo and branch configuration setting, otherwise it's
-    # probably not an app that we should deploy w/ jenkins
     for x in toplevel_keys_json:
         project_name = x.strip('/')
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        try:
+          response_deploy_type_url = requests.get(deploy_type_url)
+        except:
+          print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
+          return
         branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
-        test1 = response_branch_url.status_code
         branch = response_branch_url.text
-
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
-        test2 = response_github_url.status_code
         github_repo = response_github_url.text
-        if test1 == 200 and test2 == 200:
+
+        print("project_name: ", project_name)
+        print("response_deploy_type_url: ", response_deploy_type_url.text)
+        if response_deploy_type_url.text == 'gitflow':
           try:
+            print("create jenkins job for ", project_name)
             create_jenkins_job(project_name, github_repo, branch)
           except jenkins.JenkinsException as e:
             print("found {}, updating".format(e))
             update_jenkins_job(project_name, github_repo, branch)
+        else:
+          remove_jenkins_job(project_name)
 
 def update_jenkins_job(name, github_repo, branch):
   try:
@@ -320,19 +327,25 @@ def update_jenkins_job(name, github_repo, branch):
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
+def remove_jenkins_job(project_name):
+  print("removing {} job from jenkins".format(project_name))
+  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  try:
+    server.delete_job(project_name)
+  except jenkins.NotFoundException as jnfe:
+    print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
+    return
+
 def create_jenkins_job(name, github_repo, branch):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when adding job to jenkins master: {}".format(ex))
     return
   # format the job configuration template
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
   # if jobs exists, delete it the create
   server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
-
-def remove_jenkins_job(name, github_repo, branch):
-  pass
 
 def main():
   while True:
