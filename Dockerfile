@@ -1,9 +1,8 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
-#FROM jenkins/jenkins:latest
 FROM jenkins/jenkins:lts
-#COPY jenkins.war.2.151 /usr/share/jenkins/jenkins.war
-COPY jenkins.war.2.167 /usr/share/jenkins/jenkins.war
+#COPY jenkins.war.2.167 /usr/share/jenkins/jenkins.war
+COPY jenkins.war.2.186 /usr/share/jenkins/jenkins.war
 
 USER root
 
