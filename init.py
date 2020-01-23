@@ -77,7 +77,7 @@ BASE_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
         <hudson.plugins.git.extensions.impl.WipeWorkspace/>
       </extensions>
     </scm>
-    <scriptPath>devops/Jenkinsfile</scriptPath>
+    <scriptPath>Jenkinsfile</scriptPath>
     <lightweight>false</lightweight>
   </definition>
   <triggers/>
