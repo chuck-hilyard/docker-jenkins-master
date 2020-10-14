@@ -77,7 +77,7 @@ BASE_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
         <hudson.plugins.git.extensions.impl.WipeWorkspace/>
       </extensions>
     </scm>
-    <scriptPath>Jenkinsfile</scriptPath>
+    <scriptPath>{JENKINSFILE}</scriptPath>
     <lightweight>false</lightweight>
   </definition>
   <triggers/>
@@ -302,29 +302,37 @@ def scrape_consul_for_deploy_jobs():
         branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
+
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
+        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        response_jenkinsfile_url = requests.get(jenkinsfile_url)
+        jenkinsfile = response_jenkinsfile_url.text
+        if (len(jenkinsfile) == 0):
+          jenkinsfile = "Jenkinsfile"
+
         print("project_name: ", project_name)
+        print("jenkinsfile: ", jenkinsfile)
         print("response_deploy_type_url: ", response_deploy_type_url.text)
         if response_deploy_type_url.text == 'gitflow':
           try:
             print("create jenkins job for ", project_name)
-            create_jenkins_job(project_name, github_repo, branch)
+            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
           except jenkins.JenkinsException as e:
             print("found {}, updating".format(e))
-            update_jenkins_job(project_name, github_repo, branch)
+            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
         else:
           remove_jenkins_job(project_name)
 
-def update_jenkins_job(name, github_repo, branch):
+def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
     print("exception when adding server to jenkins master: {}".format(ex))
     return
-  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
+  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
 def remove_jenkins_job(project_name):
@@ -336,14 +344,14 @@ def remove_jenkins_job(project_name):
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
 
-def create_jenkins_job(name, github_repo, branch):
+def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
     print("exception when adding job to jenkins master: {}".format(ex))
     return
   # format the job configuration template
-  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch)
+  BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   # if jobs exists, delete it the create
   server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
