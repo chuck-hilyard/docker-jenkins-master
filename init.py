@@ -177,7 +177,7 @@ def add_agent_to_master(id, address, port):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when connecting adming to jenkins master: {}".format(ex))
     return
   params = {
     'port': port,
