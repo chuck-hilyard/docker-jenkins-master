@@ -4,8 +4,8 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-#RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.201/jenkins.war
-RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.263/jenkins.war
+RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.201/jenkins.war
+#RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.263/jenkins.war
 
 # removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
 RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow credentials-binding 
