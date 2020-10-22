@@ -180,7 +180,7 @@ def add_agent_to_master(id, address, port):
     print("exception when connecting adming to jenkins master: {}".format(ex))
     return
   params = {
-    'port': port,
+    'port': '6969',
     'username': 'jenkins',
     'credentialsId': 'jenkins-credential-id',
     'host': address,
