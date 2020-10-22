@@ -193,8 +193,8 @@ def add_agent_to_master(id, address, port):
       remoteFS = "/var/jenkins_home",
       labels = "common",
       exclusive = False,
-      launcher = jenkins.LAUNCHER_SSH,
-      launcher_params = params )
+      launcher = jenkins.LAUNCHER_SSH)
+      #launcher_params = params )
   except Exception as e:
     print("jenkins exception(adding server to jenkins master): {}".format(e))
 
