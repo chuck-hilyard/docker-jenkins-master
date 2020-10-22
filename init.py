@@ -183,7 +183,7 @@ def add_agent_to_master(id, address, port):
     'port': '6969',
     'username': 'jenkins',
     'credentialsId': 'jenkins-credential-id',
-    'host': 69.69.69.69,
+    'host': '69.69.69.69',
     'javaPath': '/usr/bin/java'
   }
   try:
