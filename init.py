@@ -188,8 +188,7 @@ def add_agent_to_master(id, address, port):
   }
   try:
     server.create_node(
-      #id,
-      id = "test-id-of-a-node",
+      "test-id-of-a-node",
       nodeDescription = "test slave node",
       remoteFS = "/var/jenkins_home",
       labels = "common",
