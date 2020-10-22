@@ -189,11 +189,12 @@ def add_agent_to_master(id, address, port):
   try:
     server.create_node(
       "test-id-of-a-node",
-      nodeDescription = "test slave node",
-      remoteFS = "/var/jenkins_home",
-      labels = "common",
-      exclusive = False,
-      launcher = jenkins.LAUNCHER_SSH)
+      numExecutors=1,
+      nodeDescription=None,
+      remoteFS='/var/jenkins_home',
+      labels='common',
+      exclusive=False,
+      launcher=jenkins.LAUNCHER_SSH)
       #launcher_params = params )
   except Exception as e:
     print("jenkins exception(adding server to jenkins master): {}".format(e))
