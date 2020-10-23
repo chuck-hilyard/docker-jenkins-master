@@ -177,7 +177,7 @@ def add_agent_to_master(id, address, port):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when connecting adming to jenkins master: {}".format(ex))
     return
   params = {
     'port': port,
@@ -196,14 +196,14 @@ def add_agent_to_master(id, address, port):
       launcher = jenkins.LAUNCHER_SSH,
       launcher_params = params )
   except Exception as e:
-    print("jenkins exception: {}".format(e))
+    print("jenkins exception(adding server to jenkins master): {}".format(e))
 
 def add_docker_engine_to_master(id, address, port):
   print("adding docker engine to jenkins master: ", id, address, port)
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when adding docker engine to jenkins master: {}".format(ex))
     return
   params = {
     'port': port,
@@ -222,7 +222,7 @@ def add_docker_engine_to_master(id, address, port):
       launcher = jenkins.LAUNCHER_SSH,
       launcher_params = params )
   except Exception as e:
-    print("jenkins exception: {}".format(e))
+    print("jenkins exception (adding docker engine to jenkins master): {}".format(e))
 
 def remove_agent_from_master():
   print("checking for offline nodes")
