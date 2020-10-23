@@ -15,6 +15,8 @@ RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
 ENV CHROME_BIN /usr/bin/chromium
+ENV USERNAME admin
+ENV PASSWORD admin
 
 RUN echo "deb http://ftp.de.debian.org/debian testing main" >> /etc/apt/sources.list
 RUN apt-get -y update \ 
