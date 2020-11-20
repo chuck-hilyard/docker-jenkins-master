@@ -94,7 +94,8 @@ def jenkins_start():
 def install_plugins():
   # install the suggested and desired plugins list
   PLUGINS = os.listdir('/usr/share/jenkins/ref/plugins/')
-  time.sleep(30)
+  print("**** SLEEPING ***")
+  time.sleep(60)
   for PLUGIN in PLUGINS:
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080", "-auth", "admin:admin", "install-plugin", "file:////usr/share/jenkins/ref/plugins/{}".format(PLUGIN)])
 
