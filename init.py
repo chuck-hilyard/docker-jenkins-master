@@ -90,27 +90,13 @@ def jenkins_start():
   params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '-Dpermissive-script-security.enabled=true', '/usr/share/jenkins/jenkins.war']
   jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
 
-# plugins are DOWNLOADED during docker image build and INSTALLED here
+# plugins are DOWNLOADED during docker image build and INSTALLED here during container startup
 def install_plugins():
   # install the suggested and desired plugins list
   PLUGINS = os.listdir('/usr/share/jenkins/ref/plugins/')
   time.sleep(30)
   for PLUGIN in PLUGINS:
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080", "-auth", "admin:admin", "install-plugin", "file:////usr/share/jenkins/ref/plugins/{}".format(PLUGIN)])
-  #f = open('/tmp/docker-jenkins-master/plugins.txt', 'r')
-  #suggested_plugins = []
-  #for line in f:
-  #  stripped = line.strip()
-  #  suggested_plugins.append(stripped)
-  # we're waiting 30 seconds for jenkins to come up
-  # TODO: move this to a health check
-  #time.sleep(30)
-  #i = 0
-  #while i < len(suggested_plugins):
-  #  PLUGIN = suggested_plugins[i]
-  #  subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080", "-auth", "admin:admin", "install-plugin", "file:////usr/share/jenkins/ref/plugins/{}.jpi".format(PLUGIN)])
-  #  subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
-  #  i += 1
 
   # install build/test software
   # ***** make sure the previous install is done prior to moving on
