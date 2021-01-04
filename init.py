@@ -326,6 +326,52 @@ def scrape_consul_for_deploy_jobs():
         else:
           remove_jenkins_job(project_name)
 
+def scrape_consul_for_deploy_jobs_to_remove():
+  print("scraping consul for deploy jobs")
+  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  try:
+    response = requests.get(url)
+  except requests.exceptions.RequestException as e:
+    print("exception talking to consul: {}".format(e))
+    return
+  if response.status_code == 200:
+    toplevel_keys_json = json.loads(response.text)
+
+    for x in toplevel_keys_json:
+        project_name = x.strip('/')
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        try:
+          response_deploy_type_url = requests.get(deploy_type_url)
+        except:
+          print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
+          return
+        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        response_branch_url = requests.get(branch_url)
+        branch = response_branch_url.text
+
+        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        response_github_url = requests.get(github_url)
+        github_repo = response_github_url.text
+
+        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        response_jenkinsfile_url = requests.get(jenkinsfile_url)
+        jenkinsfile = response_jenkinsfile_url.text
+        if (len(jenkinsfile) == 0):
+          jenkinsfile = "Jenkinsfile"
+
+        print("project_name: ", project_name)
+        print("jenkinsfile: ", jenkinsfile)
+        print("response_deploy_type_url: ", response_deploy_type_url.text)
+        if response_deploy_type_url.text == 'gitflow':
+          try:
+            print("create jenkins job for ", project_name)
+            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+          except jenkins.JenkinsException as e:
+            print("found {}, updating".format(e))
+            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+        else:
+          remove_jenkins_job(project_name)
+
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
@@ -334,6 +380,9 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+
+def scrape_consul_for_deploy_jobs_to_remove():
+  pass
 
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
