@@ -380,7 +380,7 @@ def remove_jenkins_job(project_name):
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
 
-remove_consul_entry(project_name)
+def remove_consul_entry(project_name):
   pass
 
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
