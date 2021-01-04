@@ -373,7 +373,7 @@ def remove_jenkins_job(project_name):
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
   # is a job currently running
   running_builds = server.get_running_builds()
-  print("RUNNING BUILDS is a: ", type(running_builds))
+  print("RUNNING BUILDS: ", running_builds)
   try:
     server.delete_job(project_name)
   except jenkins.NotFoundException as jnfe:
