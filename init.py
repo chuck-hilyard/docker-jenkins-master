@@ -347,10 +347,10 @@ def scrape_consul_for_deploy_jobs_to_remove():
           return
 
         runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
-        response_runonce = requests.get(runonce_url)
-        runonce_state = response_runonce.text
+        response_runonce_url = requests.get(runonce_url)
+        #runonce = response_runonce_url.text
 
-        if runonce_state.text == 'true':
+        if response_runonce_state.text == 'true':
           try:
             print("remove jenkins job for {}", project_name)
             remove_jenkins_job(project_name)
