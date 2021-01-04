@@ -350,7 +350,7 @@ def scrape_consul_for_deploy_jobs_to_remove():
         response_runonce_url = requests.get(runonce_url)
         #runonce = response_runonce_url.text
 
-        if response_runonce_state.text == 'true':
+        if response_runonce_url.text == 'true':
           try:
             print("remove jenkins job for {}", project_name)
             remove_jenkins_job(project_name)
