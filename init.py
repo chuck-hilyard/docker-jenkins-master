@@ -348,16 +348,16 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
         runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
         response_runonce = requests.get(runonce_url)
-        runonce_state = response_url.text
+        runonce_state = response_runonce.text
 
         if runonce_state.text == 'true':
           try:
-            print("remove jenkins job for ", project_name)
+            print("remove jenkins job for {}", project_name)
             remove_jenkins_job(project_name)
           except jenkins.JenkinsException as e:
             print("exception removing jenkins job {}".format(e))
         else:
-          remove_jenkins_job(project_name)
+          pass
 
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
@@ -367,9 +367,6 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
-
-def scrape_consul_for_deploy_jobs_to_remove():
-  pass
 
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
@@ -399,6 +396,8 @@ def main():
     scrape_consul_for_docker_engines()
     time.sleep(30)
     scrape_consul_for_deploy_jobs()
+    time.sleep(30)
+    scrape_consul_for_deploy_jobs_to_remove()
     time.sleep(30)
     remove_agent_from_master()
     time.sleep(30)
