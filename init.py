@@ -348,12 +348,12 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
         runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
         response_runonce_url = requests.get(runonce_url)
-        #runonce = response_runonce_url.text
 
         if response_runonce_url.text == 'true':
           try:
             print("remove jenkins job for {}", project_name)
             remove_jenkins_job(project_name)
+            #remove_consul_entry(project_name)
           except jenkins.JenkinsException as e:
             print("exception removing jenkins job {}".format(e))
         else:
@@ -371,11 +371,17 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  # is a job currently running
+  running_builds = server.get_running_builds()
+  print("RUNNING BUILDS", running_builds)
   try:
     server.delete_job(project_name)
   except jenkins.NotFoundException as jnfe:
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
+
+remove_consul_entry(project_name)
+  pass
 
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
