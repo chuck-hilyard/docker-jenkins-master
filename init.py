@@ -326,6 +326,39 @@ def scrape_consul_for_deploy_jobs():
         else:
           remove_jenkins_job(project_name)
 
+def scrape_consul_for_deploy_jobs_to_remove():
+  print("scraping consul for deploy jobs to remove")
+  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  try:
+    response = requests.get(url)
+  except requests.exceptions.RequestException as e:
+    print("exception talking to consul: {}".format(e))
+    return
+  if response.status_code == 200:
+    toplevel_keys_json = json.loads(response.text)
+
+    for x in toplevel_keys_json:
+        project_name = x.strip('/')
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        try:
+          response_deploy_type_url = requests.get(deploy_type_url)
+        except:
+          print("failed trying to get RUNONCE for {}".format(project_name))
+          return
+
+        runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
+        response_runonce_url = requests.get(runonce_url)
+
+        if response_runonce_url.text == 'true':
+          try:
+            print("remove jenkins job for {}", project_name)
+            remove_jenkins_job(project_name)
+            #remove_consul_entry(project_name)
+          except jenkins.JenkinsException as e:
+            print("exception removing jenkins job {}".format(e))
+        else:
+          pass
+
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
@@ -338,11 +371,17 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
   server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  # is a job currently running
+  running_builds = server.get_running_builds()
+  print("RUNNING BUILDS: ", running_builds)
   try:
     server.delete_job(project_name)
   except jenkins.NotFoundException as jnfe:
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
+
+def remove_consul_entry(project_name):
+  pass
 
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
@@ -363,6 +402,8 @@ def main():
     scrape_consul_for_docker_engines()
     time.sleep(30)
     scrape_consul_for_deploy_jobs()
+    time.sleep(30)
+    scrape_consul_for_deploy_jobs_to_remove()
     time.sleep(30)
     remove_agent_from_master()
     time.sleep(30)

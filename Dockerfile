@@ -6,8 +6,6 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-#RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.201/jenkins.war
-#RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.251/jenkins.war
 RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.263/jenkins.war
 
 # removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
@@ -23,7 +21,7 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" >> /etc/apt/sources.
 RUN apt-get -y update \ 
   && apt-get -y upgrade --no-install-recommends \
   && apt-get -y install -o APT::Immediate-Configure=0 python3 python3-pip python3-boto3 vim sudo python3-jenkins=0.4.16-1 -V 
-RUN pip3 install requests consulate
+RUN pip3 install requests consulate wget
 
 COPY --chown=jenkins *.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY --chown=jenkins *.xml /var/jenkins_home/
