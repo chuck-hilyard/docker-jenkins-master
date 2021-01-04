@@ -327,7 +327,7 @@ def scrape_consul_for_deploy_jobs():
           remove_jenkins_job(project_name)
 
 def scrape_consul_for_deploy_jobs_to_remove():
-  print("scraping consul for deploy jobs")
+  print("scraping consul for deploy jobs to remove")
   url = 'http://consul:8500/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
@@ -343,32 +343,19 @@ def scrape_consul_for_deploy_jobs_to_remove():
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
-          print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
+          print("failed trying to get RUNONCE for {}".format(project_name))
           return
-        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
-        response_branch_url = requests.get(branch_url)
-        branch = response_branch_url.text
 
-        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
-        response_github_url = requests.get(github_url)
-        github_repo = response_github_url.text
+        runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
+        response_runonce = requests.get(runonce_url)
+        runonce_state = response_url.text
 
-        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
-        response_jenkinsfile_url = requests.get(jenkinsfile_url)
-        jenkinsfile = response_jenkinsfile_url.text
-        if (len(jenkinsfile) == 0):
-          jenkinsfile = "Jenkinsfile"
-
-        print("project_name: ", project_name)
-        print("jenkinsfile: ", jenkinsfile)
-        print("response_deploy_type_url: ", response_deploy_type_url.text)
-        if response_deploy_type_url.text == 'gitflow':
+        if runonce_state.text == 'true':
           try:
-            print("create jenkins job for ", project_name)
-            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            print("remove jenkins job for ", project_name)
+            remove_jenkins_job(project_name)
           except jenkins.JenkinsException as e:
-            print("found {}, updating".format(e))
-            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            print("exception removing jenkins job {}".format(e))
         else:
           remove_jenkins_job(project_name)
 
