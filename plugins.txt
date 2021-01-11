@@ -1,5 +1,6 @@
 ant
 authentication-tokens
+file:///tmp/aws-java-sdk.hpi
 blueocean
 branch-api
 build-timeout
@@ -16,13 +17,14 @@ git-server
 github-branch-source
 gradle
 http_request
-ldap
+file:///tmp/ldap.hpi
 matrix-auth
 matrix-project
 resource-disposer
 s3
 saferestart
 scm-api
+sdk-for-java
 ssh-credentials
 file:///tmp/ssh-slaves.hpi
 token-macro

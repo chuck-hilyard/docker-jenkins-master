@@ -96,9 +96,11 @@ def install_software():
   for line in f:
     stripped = line.strip()
     suggested_plugins.append(stripped)
+  #wget localhost:8080/jnlpJars/jenkins-cli.jar -o /var/jenkins_home/war/WEB-INF/jenkins-cli.jar
   # we're waiting 30 seconds for jenkins to come up
   # TODO: move this to a health check
   time.sleep(30)
+  subprocess.run(["wget", "-P", "/var/jenkins_home/war/WEB-INF", "http://127.0.0.1:8080/jnlpJars/jenkins-cli.jar"])
   i = 0
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
