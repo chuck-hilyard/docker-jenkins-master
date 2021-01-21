@@ -1,3 +1,4 @@
 aws_codebuild
 credentials.xml
 id_rsa
+.idea
