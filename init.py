@@ -171,6 +171,10 @@ def install_software():
   except FileNotFoundError as e:
     print("file copy to credentials.xml failed")
 
+  # mv config_xml into config.xml
+  print("**************************************** config xml *************************")
+  subprocess.run(["cp", "/var/jenkins_home/config_xml", "/var/jenkins_home/config.xml"])
+
   # after all the changes, hit restart
   subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
