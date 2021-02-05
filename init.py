@@ -394,7 +394,7 @@ def scrape_consul_for_deploy_jobs_to_add():
         if (len(jenkinsfile) == 0):
           jenkinsfile = "Jenkinsfile"
 
-        multibranch_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(multibranch)
+        multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(multibranch)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
 
