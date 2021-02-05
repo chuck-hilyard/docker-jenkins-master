@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+## not currently in use
+
 mkdir -p /tmp/plugins
 
 #--skp-failed-plugins
