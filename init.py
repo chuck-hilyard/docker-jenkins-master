@@ -152,7 +152,12 @@ def jenkins_start():
 def install_software():
   # we're waiting for jenkins to come up
   # TODO: move this to a health check
-  time.sleep(15)
+  time.sleep(30)
+
+  # TODO: this is from a merge conflict during 2_263 upgrade (do we need this?)
+  print("************ DOWNLOADING jenkins-cli.jar *************8")
+  subprocess.run(["wget", "-P", "/var/jenkins_home/war/WEB-INF", "http://127.0.0.1:8080/jnlpJars/jenkins-cli.jar"])
+  print("************ DONE DOWNLOADING jenkins-cli.jar *************8")
 
   # install plugins downloaded during docker build
   docker_build_plugins = glob.glob('/tmp/plugins/*')
@@ -173,8 +178,6 @@ def install_software():
     stripped = line.strip()
     suggested_plugins.append(stripped)
 
-  # TODO: this is from a merge conflict duing 2_263 upgrade (do we need this?)
-  #subprocess.run(["wget", "-P", "/var/jenkins_home/war/WEB-INF", "http://127.0.0.1:8080/jnlpJars/jenkins-cli.jar"])
   i = 0
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
@@ -199,7 +202,8 @@ def install_software():
     REPO_NAME = repo.split("~",1)[0].rstrip('\n')
     REPO_URL = repo.split("~",1)[1].rstrip('\n')
     TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
-    url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    #url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(REPO_NAME)
     print("target url is ", url)
     try:
       response = requests.get(url)
@@ -334,7 +338,8 @@ def scrape_consul_for_docker_engines():
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
   print("***************** SETTING FQDN *******************")
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -352,7 +357,8 @@ def scrape_consul_for_docker_engines():
 
 def scrape_consul_for_agents():
   print("scraping consul for agents")
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -370,7 +376,8 @@ def scrape_consul_for_agents():
 
 def scrape_consul_for_deploy_jobs_to_add():
   print("scraping consul for deploy jobs")
-  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -381,27 +388,32 @@ def scrape_consul_for_deploy_jobs_to_add():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
           print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
           return
-        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        #branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        branch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
 
-        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        github_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
-        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        #jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        jenkinsfile_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
         response_jenkinsfile_url = requests.get(jenkinsfile_url)
         jenkinsfile = response_jenkinsfile_url.text
         if (len(jenkinsfile) == 0):
           jenkinsfile = "Jenkinsfile"
 
-        multibranch_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(multibranch)
+        #multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(multibranch)
+        multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(multibranch)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
 
@@ -440,7 +452,8 @@ def current_multibranch_jobs(action, name):
 
 def scrape_consul_for_deploy_jobs_to_remove():
   print("scraping consul for deploy jobs to remove")
-  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -451,7 +464,8 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:

@@ -30,7 +30,7 @@ COPY --chown=root config_xml /var/jenkins_home/config_xml
 COPY --chown=jenkins id_rsa /var/jenkins_home/.ssh/id_rsa
 COPY --chown=root known_hosts /root/.ssh/known_hosts
 COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
-COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
+#COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
 
 RUN wget -nv -O /tmp/ssh-slaves.hpi updates.jenkins-ci.org/download/plugins/ssh-slaves/1.31.5/ssh-slaves.hpi
 RUN wget -nv -O /tmp/ldap.hpi updates.jenkins-ci.org/download/plugins/ldap/2.2/ldap.hpi

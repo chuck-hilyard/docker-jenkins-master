@@ -1,4 +1,4 @@
-file:///tmp/ssh-slaves.hpi
+ssh-slaves
 git 
 matrix-auth 
 workflow-aggregator 
