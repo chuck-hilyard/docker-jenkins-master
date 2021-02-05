@@ -20,7 +20,6 @@ ENV PASSWORD admin
 RUN echo "deb http://ftp.de.debian.org/debian testing main" >> /etc/apt/sources.list
 RUN apt-get -y update \ 
   && apt-get -y upgrade --no-install-recommends \
-  #&& apt-get -y install -o APT::Immediate-Configure=0 apt-transport-https python3 python3-pip python3-boto3 vim sudo python3-jenkins=0.4.16-1 -V 
   && apt-get -y install -o APT::Immediate-Configure=0 apt-transport-https python3 python3-pip python3-boto3 vim sudo python3-jenkins 
 RUN pip3 install requests consulate wget
 
@@ -31,13 +30,11 @@ COPY --chown=root config_xml /var/jenkins_home/config_xml
 COPY --chown=jenkins id_rsa /var/jenkins_home/.ssh/id_rsa
 COPY --chown=root known_hosts /root/.ssh/known_hosts
 COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
+COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
 
 RUN wget -nv -O /tmp/ssh-slaves.hpi updates.jenkins-ci.org/download/plugins/ssh-slaves/1.31.5/ssh-slaves.hpi
 RUN wget -nv -O /tmp/ldap.hpi updates.jenkins-ci.org/download/plugins/ldap/2.2/ldap.hpi
 RUN wget -nv -O /tmp/aws-java-sdk.hpi updates.jenkins-ci.org/download/plugins/aws-java-sdk/1.11.930/aws-java-sdk.hpi
-#COPY --chown=jenkins ssh-slaves.hpi /tmp/ssh-slaves.hpi
-#COPY --chown=jenkins ldap.hpi /tmp/ldap.hpi
-#COPY --chown=jenkins aws-java-sdk.hpi /tmp/aws-java-sdk.hpi
 
 RUN cd /tmp; git clone --progress --verbose https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
