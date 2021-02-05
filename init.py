@@ -4,8 +4,7 @@
 # installs plugins
 # adds github based projects to jenkins/jobs
 
-import consulate
-import http.client
+import glob
 import jenkins
 import json
 import requests
@@ -13,6 +12,8 @@ import subprocess
 import time
 
 from socket import gaierror
+
+multibranch_job_list = []
 
 BASE_CREDENTIALS_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
 <com.cloudbees.plugins.credentials.SystemCredentialsProvider plugin="credentials@2.1.18">
@@ -84,24 +85,99 @@ BASE_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
   <disabled>false</disabled>
 </flow-definition>'''
 
+MULTIBRANCH_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.22">
+  <actions/>
+  <description></description>
+  <properties>
+    <org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig plugin="docker-workflow@1.25">
+      <dockerLabel></dockerLabel>
+      <registry plugin="docker-commons@1.16"/>
+    </org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig>
+  </properties>
+  <folderViews class="jenkins.branch.MultiBranchProjectViewHolder" plugin="branch-api@2.6.2">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </folderViews>
+  <healthMetrics>
+    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@6.14">
+      <nonRecursive>false</nonRecursive>
+    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+  </healthMetrics>
+  <icon class="jenkins.branch.MetadataActionFolderIcon" plugin="branch-api@2.6.2">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </icon>
+  <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@6.14">
+    <pruneDeadBranches>true</pruneDeadBranches>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>-1</numToKeep>
+  </orphanedItemStrategy>
+  <triggers>
+    <com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger plugin="cloudbees-folder@6.14">
+      <spec>* * * * *</spec>
+      <interval>300000</interval>
+    </com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger>
+  </triggers>
+  <disabled>false</disabled>
+  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@2.6.2">
+    <data>
+      <jenkins.branch.BranchSource>
+        <source class="jenkins.plugins.git.GitSCMSource" plugin="git@4.2.2">
+          <id>8171e18e-f660-49f6-94d5-54c747d37a3f</id>
+          <remote>{REPO_URL}</remote>
+          <credentialsId>jenkins-credential-id</credentialsId>
+          <traits>
+            <jenkins.plugins.git.traits.BranchDiscoveryTrait/>
+          </traits>
+        </source>
+        <strategy class="jenkins.branch.DefaultBranchPropertyStrategy">
+          <properties class="empty-list"/>
+        </strategy>
+      </jenkins.branch.BranchSource>
+    </data>
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </sources>
+  <factory class="org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <scriptPath>{JENKINSFILE}</scriptPath>
+  </factory>
+</org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>'''
+
+
 def jenkins_start():
   # startup the jenkins service
   params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '-Dpermissive-script-security.enabled=true', '/usr/share/jenkins/jenkins.war']
   jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
 
+
 def install_software():
+  # we're waiting 30 seconds for jenkins to come up
+  # TODO: move this to a health check
+  time.sleep(15)
+
+  # install plugins downloaded during docker build
+  #docker_build_plugins = subprocess.run(["ls", "-1tr", "/tmp/plugins"], capture_output=True)
+  docker_build_plugins = glob.glob('/tmp/plugins/*')
+  docker_build_plugins_list = []
+  for line in list(docker_build_plugins):
+    #stripped_line = line.strip()
+    docker_build_plugins_list.append(line)
+  i = 0
+  while i < len(docker_build_plugins_list):
+    PLUGIN = docker_build_plugins_list[i]
+    print("installing {}:".format(PLUGIN))
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", "file://{}".format(PLUGIN)])
+    i += 1
+
   # install the suggested and desired plugins list
   f = open('/tmp/docker-jenkins-master/plugins.txt', 'r')
   suggested_plugins = []
   for line in f:
     stripped = line.strip()
     suggested_plugins.append(stripped)
-  # we're waiting 30 seconds for jenkins to come up
-  # TODO: move this to a health check
-  time.sleep(30)
   i = 0
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
+    print("installing plugin {}".format(PLUGIN))
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
     i += 1
 
@@ -122,7 +198,8 @@ def install_software():
     REPO_NAME = repo.split("~",1)[0].rstrip('\n')
     REPO_URL = repo.split("~",1)[1].rstrip('\n')
     TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
-    url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    #url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(REPO_NAME)
     print("target url is ", url)
     try:
       response = requests.get(url)
@@ -172,10 +249,11 @@ def install_software():
   # after all the changes, hit restart
   subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
+
 def add_agent_to_master(id, address, port):
   print("adding server to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   except Exception as ex:
     print("exception when connecting adming to jenkins master: {}".format(ex))
     return
@@ -198,12 +276,14 @@ def add_agent_to_master(id, address, port):
   except Exception as e:
     print("jenkins exception(adding server to jenkins master): {}".format(e))
 
+
 def add_docker_engine_to_master(id, address, port):
   print("adding docker engine to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    #server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding docker engine to jenkins master: {}".format(ex))
+    print("exception when connecting to jenkins master (localhost): {}".format(ex))
     return
   params = {
     'port': port,
@@ -224,12 +304,13 @@ def add_docker_engine_to_master(id, address, port):
   except Exception as e:
     print("jenkins exception (adding docker engine to jenkins master): {}".format(e))
 
+
 def remove_agent_from_master():
   print("checking for offline nodes")
   try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when removing agent from jenkins master: {}".format(ex))
     return
   try:
     server_list = server.get_nodes()
@@ -244,11 +325,14 @@ def remove_agent_from_master():
         print("exception while removing {} from jenkins master".format(ex))
         return
 
+
 def scrape_consul_for_docker_engines():
   print("scraping consul for docker engines")
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  print("***************** SETTING FQDN *******************")
+  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "https://consul{}/v1/catalog/service/media-team-devops-automation-jenkins-agent".format(".dev.usa.media.reachlocalservices.com")
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -263,9 +347,11 @@ def scrape_consul_for_docker_engines():
       id = "{}-{}".format(address, port)
       add_docker_engine_to_master(id, address, port)
 
+
 def scrape_consul_for_agents():
   print("scraping consul for agents")
-  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -280,9 +366,11 @@ def scrape_consul_for_agents():
       id = "{}-{}".format(address, port)
       add_agent_to_master(id, address, port)
 
-def scrape_consul_for_deploy_jobs():
+
+def scrape_consul_for_deploy_jobs_to_add():
   print("scraping consul for deploy jobs")
-  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -293,42 +381,73 @@ def scrape_consul_for_deploy_jobs():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
           print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
           return
-        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        #branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        branch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
 
-        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        github_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
-        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        #jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        jenkinsfile_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
         response_jenkinsfile_url = requests.get(jenkinsfile_url)
         jenkinsfile = response_jenkinsfile_url.text
         if (len(jenkinsfile) == 0):
           jenkinsfile = "Jenkinsfile"
 
+        #multibranch_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(multibranch)
+        multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
+        response_multibranch_url = requests.get(multibranch_url)
+        multibranch = response_multibranch_url.text
+
         print("project_name: ", project_name)
         print("jenkinsfile: ", jenkinsfile)
         print("response_deploy_type_url: ", response_deploy_type_url.text)
-        if response_deploy_type_url.text == 'gitflow':
+
+        if response_deploy_type_url.text == 'gitflow' and response_multibranch_url.text == 'true':
           try:
-            print("create jenkins job for ", project_name)
-            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            print("create multbranch pipeline jenkins job for ", project_name)
+            create_multibranch_pipeline_job(project_name, github_repo, branch, jenkinsfile)
           except jenkins.JenkinsException as e:
             print("found {}, updating".format(e))
-            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            update_multibranch_job(project_name, github_repo, branch, jenkinsfile)
+        elif response_deploy_type_url.text == 'gitflow':
+          if current_multibranch_jobs('check', project_name) > 0:
+            print("removing multibranch pipeline jenkins job for ", project_name)
+            remove_jenkins_job(project_name)
+            print("create jenkins job for ", project_name)
+            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+          else:
+            print("update jenkins job for ", project_name)
+            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
         else:
-          remove_jenkins_job(project_name)
+          pass
+          #remove_jenkins_job(project_name)
+
+
+def current_multibranch_jobs(action, name):
+  if action == 'check':
+    return multibranch_job_list.count(name)
+  elif action == 'add':
+    multibranch_job_list.append(name)
+  elif action == 'remove':
+    multibranch_job_list.remove(name)
+
 
 def scrape_consul_for_deploy_jobs_to_remove():
   print("scraping consul for deploy jobs to remove")
-  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -339,17 +458,19 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
-          print("failed trying to get RUNONCE for {}".format(project_name))
+          print("failed trying to get deploy_type for {}".format(project_name))
           return
 
-        runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
-        response_runonce_url = requests.get(runonce_url)
+        #runonce_url = "http://consul:8500/v1/kv/{}/config/runonce?raw".format(project_name)
+        #runonce_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/runonce?raw".format(project_name)
+        #response_runonce_url = requests.get(runonce_url)
 
-        if response_runonce_url.text == 'true':
+        if response_deploy_type_url.text != 'gitflow':
           try:
             print("remove jenkins job for {}", project_name)
             remove_jenkins_job(project_name)
@@ -359,18 +480,32 @@ def scrape_consul_for_deploy_jobs_to_remove():
         else:
           pass
 
+
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
+  print("in update_jenkins_job")
   try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   except Exception as ex:
-    print("exception when adding server to jenkins master: {}".format(ex))
+    print("exception when updating job {}: {}".format(name, ex))
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
 
+
+def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
+  print("updating multibranch jenkins job for {}".format(name))
+  try:
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when updating multibranch job {}: {}".format(name, ex))
+    return
+  MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE = MULTIBRANCH_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
+  server.reconfig_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
+
+
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
-  server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+  server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   # is a job currently running
   running_builds = server.get_running_builds()
   print("RUNNING BUILDS: ", running_builds)
@@ -380,19 +515,61 @@ def remove_jenkins_job(project_name):
     print("exception when removing job {} from jenkins master: {}".format(project_name, jnfe))
     return
 
-def remove_consul_entry(project_name):
-  pass
 
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
+  print("in create_jenkins_job")
   try:
-    server = jenkins.Jenkins('http://jenkins-master', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
   except Exception as ex:
     print("exception when adding job to jenkins master: {}".format(ex))
     return
   # format the job configuration template
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
-  # if jobs exists, delete it the create
-  server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  # if jobs exists, delete it then create
+
+  out = None
+  try:
+    out = server.get_job_config(name)
+  except jenkins.NotFoundException as nfe:
+    print("not found exception doing get_job_config({}): {}".format(name, nfe))
+  except Exception as ex:
+    print("exception doing get_job_config({}): {}".format(name, ex))
+
+  if out == None:
+    server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  elif current_multibranch_jobs('check', name) > 0:
+    server.delete_job(name)
+    current_multibranch_jobs('remove', project_name)
+    server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  else:
+    pass
+
+
+def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
+  try:
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+  except Exception as ex:
+    print("exception when adding job to jenkins master: {}".format(ex))
+    return
+  # format the job configuration template
+  MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE = MULTIBRANCH_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
+  # if jobs already exists, delete it then create
+  job_exists = None
+  try:
+    job_exists = server.get_job_config(name)
+  except jenkins.NotFoundException as nfe:
+    print("not found exception doing get_job_config({}): {}".format(name, nfe))
+  except Exception as ex:
+    print("exception doing get_job_config({}): {}".format(name, ex))
+
+  if job_exists == None:
+    server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
+    current_multibranch_jobs('add', name)
+  else:
+    #server.delete_job(name)
+    #server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
+    pass
+
 
 def main():
   while True:
@@ -401,7 +578,7 @@ def main():
     time.sleep(30)
     scrape_consul_for_docker_engines()
     time.sleep(30)
-    scrape_consul_for_deploy_jobs()
+    scrape_consul_for_deploy_jobs_to_add()
     time.sleep(30)
     scrape_consul_for_deploy_jobs_to_remove()
     time.sleep(30)
@@ -412,4 +589,5 @@ def main():
 if __name__ == '__main__':
   jenkins_start()
   install_software()
+  time.sleep(30)
   main()
