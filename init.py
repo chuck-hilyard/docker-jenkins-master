@@ -375,7 +375,7 @@ def scrape_consul_for_agents():
 
 
 def scrape_consul_for_deploy_jobs_to_add():
-  print("scraping consul for deploy jobs")
+  print("scraping consul for deploy jobs to add")
   #url = 'http://consul:8500/v1/kv/?keys&separator=/'
   url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
@@ -413,9 +413,10 @@ def scrape_consul_for_deploy_jobs_to_add():
           jenkinsfile = "Jenkinsfile"
 
         #multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(multibranch)
-        multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(multibranch)
+        multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
+        print("******* multibranch text ******: ", multibranch)
 
         print("project_name: ", project_name)
         print("jenkinsfile: ", jenkinsfile)
