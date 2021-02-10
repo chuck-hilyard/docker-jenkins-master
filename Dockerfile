@@ -18,7 +18,9 @@ ENV USERNAME admin
 ENV PASSWORD admin
 
 RUN echo "deb http://ftp.de.debian.org/debian testing main" >> /etc/apt/sources.list
-RUN apt-get -y update \ 
+RUN  apt-get autoremove \
+  && apt-get -y clean \
+  && apt-get -y update \ 
   && apt-get -y upgrade --no-install-recommends \
   && apt-get -y install -o APT::Immediate-Configure=0 apt-transport-https python3 python3-pip python3-boto3 vim sudo python3-jenkins 
 RUN pip3 install requests consulate wget
@@ -31,6 +33,7 @@ COPY --chown=jenkins id_rsa /var/jenkins_home/.ssh/id_rsa
 COPY --chown=root known_hosts /root/.ssh/known_hosts
 COPY --chown=jenkins known_hosts /var/jenkins_home/.ssh/known_hosts
 #COPY --chown=jenkins ssh-slaves.1.28.1.hpi /tmp/ssh-slaves.hpi
+COPY users /var/jenkins_home/users
 
 RUN wget -nv -O /tmp/ssh-slaves.hpi updates.jenkins-ci.org/download/plugins/ssh-slaves/1.31.5/ssh-slaves.hpi
 RUN wget -nv -O /tmp/ldap.hpi updates.jenkins-ci.org/download/plugins/ldap/2.2/ldap.hpi

@@ -168,7 +168,7 @@ def install_software():
   while i < len(docker_build_plugins_list):
     PLUGIN = docker_build_plugins_list[i]
     print("installing {}:".format(PLUGIN))
-    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", "file://{}".format(PLUGIN)])
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", "file://{}".format(PLUGIN)])
     i += 1
 
   # install the suggested and desired plugins list
@@ -182,7 +182,7 @@ def install_software():
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
     print("installing plugin {}".format(PLUGIN))
-    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", PLUGIN])
     i += 1
 
   # install build/test software
@@ -255,13 +255,13 @@ def install_software():
   subprocess.run(["cp", "/var/jenkins_home/config_xml", "/var/jenkins_home/config.xml"])
 
   # after all the changes, hit restart
-  subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
+  subprocess.run(["curl", "-X", "POST", "-u", "admin:11fdf46a3db182d421efbf077f7974f3aa", "http://127.0.0.1:8080/safeRestart"])
 
 
 def add_agent_to_master(id, address, port):
   print("adding server to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when connecting adming to jenkins master: {}".format(ex))
     return
@@ -288,7 +288,7 @@ def add_agent_to_master(id, address, port):
 def add_docker_engine_to_master(id, address, port):
   print("adding docker engine to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when connecting to jenkins master (localhost): {}".format(ex))
     return
@@ -315,7 +315,7 @@ def add_docker_engine_to_master(id, address, port):
 def remove_agent_from_master():
   print("checking for offline nodes")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when removing agent from jenkins master: {}".format(ex))
     return
@@ -491,7 +491,7 @@ def scrape_consul_for_deploy_jobs_to_remove():
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   print("in update_jenkins_job")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when updating job {}: {}".format(name, ex))
     return
@@ -502,7 +502,7 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
 def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   print("updating multibranch jenkins job for {}".format(name))
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when updating multibranch job {}: {}".format(name, ex))
     return
@@ -512,7 +512,7 @@ def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile')
 
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
-  server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+  server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   running_builds = server.get_running_builds()
   print("RUNNING BUILDS: ", running_builds)
   try:
@@ -525,7 +525,7 @@ def remove_jenkins_job(project_name):
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   print("in create_jenkins_job")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when adding job to jenkins master: {}".format(ex))
     return
@@ -551,7 +551,7 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
 
 def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when adding job to jenkins master: {}".format(ex))
     return
