@@ -257,7 +257,10 @@ def install_software():
   # after all the changes, hit restart
   print("************************** SLEEPING 30 BEFORE RESTART ********************")
   time.sleep(30)
-  subprocess.run(["curl", "-X", "POST", "-u", "admin:11fdf46a3db182d421efbf077f7974f3aa", "http://127.0.0.1:8080/safeRestart"])
+  print("************************** TESTING SAFE REESTART       ********************")
+  #subprocess.run(["curl", "-X", "POST", "-u", "admin:11fdf46a3db182d421efbf077f7974f3aa", "http://127.0.0.1:8080/safeRestart"])
+  subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "safe-restart"])
+  print("************************** AFTER RESTART ********************")
 
 
 def add_agent_to_master(id, address, port):
@@ -566,7 +569,8 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
   except jenkins.NotFoundException as nfe:
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
   except Exception as ex:
-    print("exception doing get_job_config({}): {}".format(name, ex))
+    print("exception doing multibranch.get_job_config({}): {}".format(name, ex))
+  return
 
   if job_exists == None:
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
