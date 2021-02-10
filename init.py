@@ -162,7 +162,7 @@ def install_software():
   i = 0
   while i < len(docker_build_plugins_list):
     PLUGIN = docker_build_plugins_list[i]
-    print("installing {}:".format(PLUGIN))
+    print("installing PLUGIN {}:".format(PLUGIN))
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", "file://{}".format(PLUGIN)])
     i += 1
 
@@ -244,6 +244,8 @@ def install_software():
     print("file copy to credentials.xml failed")
 
   # after all the changes, hit restart
+  print("************************** SLEEPING 30 BEFORE RESTART ********************")
+  time.sleep(30)
   subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
 
 
