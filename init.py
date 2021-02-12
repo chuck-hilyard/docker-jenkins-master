@@ -576,6 +576,7 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
     pass
 
   already_multibranch = current_multibranch_jobs('check', name)
+  print("********* ALREADY MULTIBRANCH: {} *************".format(already_multibranch))
 
   if job_exists == None:
     print(" ******************** CREATE JOB **************")
