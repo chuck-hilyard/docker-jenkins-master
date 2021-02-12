@@ -582,11 +582,11 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
     print(" ******************** CREATE JOB **************")
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
     current_multibranch_jobs('add', name)
-  elif job_exists and already_multibranch != "true":
+  elif job_exists and already_multibranch != 1:
     print(" ******************** ALREADY EXISTS, DELETE_JOB, and RECONFIG JOB **************")
     server.delete_job(name)
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
-  elif job_exists and already_multibranch == "true":
+  elif job_exists and already_multibranch == 1:
     print(" ******************** RECONFIG JOB **************")
     server.reconfig_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
