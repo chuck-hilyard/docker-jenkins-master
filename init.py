@@ -202,8 +202,8 @@ def install_software():
     REPO_NAME = repo.split("~",1)[0].rstrip('\n')
     REPO_URL = repo.split("~",1)[1].rstrip('\n')
     TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
-    #url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
-    url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
+    #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(REPO_NAME)
     print("target url is ", url)
     try:
       response = requests.get(url)
@@ -343,8 +343,8 @@ def scrape_consul_for_docker_engines():
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
   print("***************** SETTING FQDN *******************")
-  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -362,8 +362,8 @@ def scrape_consul_for_docker_engines():
 
 def scrape_consul_for_agents():
   print("scraping consul for agents")
-  #url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
+  #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -381,8 +381,8 @@ def scrape_consul_for_agents():
 
 def scrape_consul_for_deploy_jobs_to_add():
   print("scraping consul for deploy jobs to add")
-  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
-  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
+  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -393,32 +393,32 @@ def scrape_consul_for_deploy_jobs_to_add():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
-        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
           print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
           return
-        #branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
-        branch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(project_name)
+        branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        #branch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
 
-        #github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
-        github_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/github_repo?raw".format(project_name)
+        github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        #github_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
-        #jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
-        jenkinsfile_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        #jenkinsfile_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
         response_jenkinsfile_url = requests.get(jenkinsfile_url)
         jenkinsfile = response_jenkinsfile_url.text
         if (len(jenkinsfile) == 0):
           jenkinsfile = "Jenkinsfile"
 
-        #multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(multibranch)
-        multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
+        multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(multibranch)
+        #multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
         print("******* multibranch text ******: ", multibranch)
@@ -458,8 +458,8 @@ def current_multibranch_jobs(action, name):
 
 def scrape_consul_for_deploy_jobs_to_remove():
   print("scraping consul for deploy jobs to remove")
-  #url = 'http://consul:8500/v1/kv/?keys&separator=/'
-  url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
+  url = 'http://consul:8500/v1/kv/?keys&separator=/'
+  #url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -470,8 +470,8 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
     for x in toplevel_keys_json:
         project_name = x.strip('/')
-        #deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
-        deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
@@ -541,8 +541,10 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     out = server.get_job_config(name)
   except jenkins.NotFoundException as nfe:
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
+    pass
   except Exception as ex:
     print("exception doing get_job_config({}): {}".format(name, ex))
+    pass
 
   if out == None:
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
@@ -568,15 +570,28 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
     job_exists = server.get_job_config(name)
   except jenkins.NotFoundException as nfe:
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
+    pass
   except Exception as ex:
     print("exception doing multibranch.get_job_config({}): {}".format(name, ex))
-  return
+    pass
+
+  already_multibranch = current_multibranch_jobs('check', name)
 
   if job_exists == None:
+    print(" ******************** CREATE JOB **************")
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
     current_multibranch_jobs('add', name)
+  elif job_exists and already_multibranch != "true":
+    print(" ******************** ALREADY EXISTS, DELETE_JOB, and RECONFIG JOB **************")
+    server.delete_job(name)
+    server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
+  elif job_exists and already_multibranch == "true":
+    print(" ******************** RECONFIG JOB **************")
+    server.reconfig_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
+    print(" ******************** MULTIBRANCH BLAH BLAH PASS **************")
     pass
+
 
 
 def main():
