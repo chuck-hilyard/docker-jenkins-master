@@ -202,7 +202,6 @@ def install_software():
     REPO_URL = repo.split("~",1)[1].rstrip('\n')
     TARGET_FOLDER = "/var/jenkins_home/jobs/{}".format(REPO_NAME)
     url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(REPO_NAME)
-    #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(REPO_NAME)
     print("target url is ", url)
     try:
       response = requests.get(url)
@@ -339,7 +338,6 @@ def scrape_consul_for_docker_engines():
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -358,7 +356,6 @@ def scrape_consul_for_docker_engines():
 def scrape_consul_for_agents():
   print("scraping consul for agents")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
-  #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -377,7 +374,6 @@ def scrape_consul_for_agents():
 def scrape_consul_for_deploy_jobs_to_add():
   print("scraping consul for deploy jobs to add")
   url = 'http://consul:8500/v1/kv/?keys&separator=/'
-  #url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
@@ -453,7 +449,6 @@ def current_multibranch_jobs(action, name):
 def scrape_consul_for_deploy_jobs_to_remove():
   print("scraping consul for deploy jobs to remove")
   url = 'http://consul:8500/v1/kv/?keys&separator=/'
-  #url = 'https://consul.dev.usa.media.reachlocalservices.com/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
   except requests.exceptions.RequestException as e:
