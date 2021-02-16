@@ -432,7 +432,8 @@ def scrape_consul_for_deploy_jobs_to_add():
             create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
           else:
             print("update jenkins job for ", project_name)
-            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            #create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
         else:
           pass
 
