@@ -155,9 +155,8 @@ def install_software():
   time.sleep(30)
 
   # TODO: this is from a merge conflict during 2_263 upgrade (do we need this?)
-  print("************ DOWNLOADING jenkins-cli.jar *************8")
+  print("DOWNLOADING jenkins-cli.jar")
   subprocess.run(["wget", "-P", "/var/jenkins_home/war/WEB-INF", "http://127.0.0.1:8080/jnlpJars/jenkins-cli.jar"])
-  print("************ DONE DOWNLOADING jenkins-cli.jar *************8")
 
   # install plugins downloaded during docker build
   docker_build_plugins = glob.glob('/tmp/plugins/*')
@@ -167,7 +166,7 @@ def install_software():
   i = 0
   while i < len(docker_build_plugins_list):
     PLUGIN = docker_build_plugins_list[i]
-    print("installing PLUGIN {}:".format(PLUGIN))
+    print("installing downloaded PLUGIN {}:".format(PLUGIN))
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", "file://{}".format(PLUGIN)])
     i += 1
 
@@ -181,7 +180,7 @@ def install_software():
   i = 0
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
-    print("installing plugin {}".format(PLUGIN))
+    print("installing from plugin.txt {}".format(PLUGIN))
     subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", PLUGIN])
     i += 1
 
@@ -251,16 +250,13 @@ def install_software():
     print("file copy to credentials.xml failed")
 
   # mv config_xml into config.xml
-  print("**************************************** config xml *************************")
   subprocess.run(["cp", "/var/jenkins_home/config_xml", "/var/jenkins_home/config.xml"])
 
   # after all the changes, hit restart
-  print("************************** SLEEPING 30 BEFORE RESTART ********************")
+  print("SLEEPING 30 BEFORE RESTART")
   time.sleep(30)
-  print("************************** TESTING SAFE REESTART       ********************")
   #subprocess.run(["curl", "-X", "POST", "-u", "admin:11fdf46a3db182d421efbf077f7974f3aa", "http://127.0.0.1:8080/safeRestart"])
   subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "safe-restart"])
-  print("************************** AFTER RESTART ********************")
 
 
 def add_agent_to_master(id, address, port):
@@ -342,7 +338,6 @@ def scrape_consul_for_docker_engines():
   print("scraping consul for docker engines")
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
-  print("***************** SETTING FQDN *******************")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   #url = "https://consul.dev.usa.media.reachlocalservices.com/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
@@ -421,7 +416,6 @@ def scrape_consul_for_deploy_jobs_to_add():
         #multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
-        print("******* multibranch text ******: ", multibranch)
 
         print("project_name: ", project_name)
         print("jenkinsfile: ", jenkinsfile)
@@ -494,7 +488,7 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
 
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
-  print("in update_jenkins_job")
+  print("update_jenkins_job()")
   try:
     server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
@@ -576,21 +570,19 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
     pass
 
   already_multibranch = current_multibranch_jobs('check', name)
-  print("********* ALREADY MULTIBRANCH: {} *************".format(already_multibranch))
+  print("ALREADY MULTIBRANCH: {}".format(already_multibranch))
 
   if job_exists == None:
-    print(" ******************** CREATE JOB **************")
+    print("CREATE JOB")
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
     current_multibranch_jobs('add', name)
   elif job_exists and already_multibranch != 1:
-    print(" ******************** ALREADY EXISTS, DELETE_JOB, and RECONFIG JOB **************")
     server.delete_job(name)
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
   elif job_exists and already_multibranch == 1:
-    print(" ******************** RECONFIG JOB **************")
+    print("RECONFIG JOB")
     server.reconfig_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
-    print(" ******************** MULTIBRANCH BLAH BLAH PASS **************")
     pass
 
 
