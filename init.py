@@ -490,7 +490,12 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     print("exception when updating job {}: {}".format(name, ex))
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
-  server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  #server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  try:
+    server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  except jenkins.JenkinsException as e:
+    print("exception removing jenkins job {}".format(e))
+    pass
 
 
 def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
