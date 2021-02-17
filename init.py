@@ -488,14 +488,14 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
-    print("exception when updating job {}: {}".format(name, ex))
+    print("exception when connecting to jenkins:{} {}".format(name, ex))
     return
+
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
-  #server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
   try:
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
-  except jenkins.JenkinsException as e:
-    print("exception removing jenkins job {}".format(e))
+  except jenkins.JenkinsException as ex:
+    print("exception updating jenkins job: {} {}".format(name, ex))
     pass
 
 
