@@ -493,7 +493,7 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
 
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   try:
-    server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+    server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
   except jenkins.JenkinsException as ex:
     print("exception updating jenkins job: {} {}".format(name, ex))
     pass
