@@ -492,15 +492,11 @@ def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
   #server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
-<<<<<<< HEAD
   try:
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
   except jenkins.JenkinsException as e:
     print("exception removing jenkins job {}".format(e))
     pass
-=======
-  server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
->>>>>>> 6362adace24dbb2d1a212d9059c86e3d1ca644b2
 
 
 def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
