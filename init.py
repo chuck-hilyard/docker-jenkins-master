@@ -152,7 +152,11 @@ def jenkins_start():
 def install_software():
   # we're waiting for jenkins to come up
   # TODO: move this to a health check
-  time.sleep(15)
+  time.sleep(30)
+
+  # TODO: this is from a merge conflict during 2_263 upgrade (do we need this?)
+  print("DOWNLOADING jenkins-cli.jar")
+  subprocess.run(["wget", "-P", "/var/jenkins_home/war/WEB-INF", "http://127.0.0.1:8080/jnlpJars/jenkins-cli.jar"])
 
   # install plugins downloaded during docker build
   docker_build_plugins = glob.glob('/tmp/plugins/*')
@@ -162,8 +166,8 @@ def install_software():
   i = 0
   while i < len(docker_build_plugins_list):
     PLUGIN = docker_build_plugins_list[i]
-    print("installing PLUGIN {}:".format(PLUGIN))
-    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", "file://{}".format(PLUGIN)])
+    print("installing downloaded PLUGIN {}:".format(PLUGIN))
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", "file://{}".format(PLUGIN)])
     i += 1
 
   # install the suggested and desired plugins list
@@ -172,11 +176,12 @@ def install_software():
   for line in f:
     stripped = line.strip()
     suggested_plugins.append(stripped)
+
   i = 0
   while i < len(suggested_plugins):
     PLUGIN = suggested_plugins[i]
-    print("installing plugin {}".format(PLUGIN))
-    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:admin", "install-plugin", PLUGIN])
+    print("installing from plugin.txt {}".format(PLUGIN))
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", PLUGIN])
     i += 1
 
   # install build/test software
@@ -243,16 +248,20 @@ def install_software():
   except FileNotFoundError as e:
     print("file copy to credentials.xml failed")
 
+  # mv config_xml into config.xml
+  subprocess.run(["cp", "/var/jenkins_home/config_xml", "/var/jenkins_home/config.xml"])
+
   # after all the changes, hit restart
-  print("************************** SLEEPING 30 BEFORE RESTART ********************")
+  print("SLEEPING 30 BEFORE RESTART")
   time.sleep(30)
-  subprocess.run(["curl", "-X", "POST", "-u", "admin:admin", "http://127.0.0.1:8080/safeRestart"])
+  #subprocess.run(["curl", "-X", "POST", "-u", "admin:11fdf46a3db182d421efbf077f7974f3aa", "http://127.0.0.1:8080/safeRestart"])
+  subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "safe-restart"])
 
 
 def add_agent_to_master(id, address, port):
   print("adding server to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when connecting adming to jenkins master: {}".format(ex))
     return
@@ -279,7 +288,7 @@ def add_agent_to_master(id, address, port):
 def add_docker_engine_to_master(id, address, port):
   print("adding docker engine to jenkins master: ", id, address, port)
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when connecting to jenkins master (localhost): {}".format(ex))
     return
@@ -306,7 +315,7 @@ def add_docker_engine_to_master(id, address, port):
 def remove_agent_from_master():
   print("checking for offline nodes")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when removing agent from jenkins master: {}".format(ex))
     return
@@ -328,7 +337,6 @@ def scrape_consul_for_docker_engines():
   print("scraping consul for docker engines")
   # this is the consul service as reported by registrator.  as consul runs on each node in the cluster
   # it should accurately reflect the available nodes available for docker engine work
-  print("***************** SETTING FQDN *******************")
   url = "http://consul:8500/v1/catalog/service/media-team-devops-automation-jenkins-agent"
   try:
     response = requests.get(url)
@@ -364,7 +372,7 @@ def scrape_consul_for_agents():
 
 
 def scrape_consul_for_deploy_jobs_to_add():
-  print("scraping consul for deploy jobs")
+  print("scraping consul for deploy jobs to add")
   url = 'http://consul:8500/v1/kv/?keys&separator=/'
   try:
     response = requests.get(url)
@@ -377,26 +385,31 @@ def scrape_consul_for_deploy_jobs_to_add():
     for x in toplevel_keys_json:
         project_name = x.strip('/')
         deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
           print("failed trying to get DEPLOY_TYPE for {}".format(project_name))
           return
         branch_url = "http://consul:8500/v1/kv/{}/config/branch?raw".format(project_name)
+        #branch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/branch?raw".format(project_name)
         response_branch_url = requests.get(branch_url)
         branch = response_branch_url.text
 
         github_url = "http://consul:8500/v1/kv/{}/config/github_repo?raw".format(project_name)
+        #github_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/github_repo?raw".format(project_name)
         response_github_url = requests.get(github_url)
         github_repo = response_github_url.text
 
         jenkinsfile_url = "http://consul:8500/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
+        #jenkinsfile_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/jenkinsfile?raw".format(project_name)
         response_jenkinsfile_url = requests.get(jenkinsfile_url)
         jenkinsfile = response_jenkinsfile_url.text
         if (len(jenkinsfile) == 0):
           jenkinsfile = "Jenkinsfile"
 
         multibranch_url = "http://consul:8500/v1/kv/{}/config/multibranch?raw".format(project_name)
+        #multibranch_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/multibranch?raw".format(project_name)
         response_multibranch_url = requests.get(multibranch_url)
         multibranch = response_multibranch_url.text
 
@@ -420,6 +433,7 @@ def scrape_consul_for_deploy_jobs_to_add():
           else:
             print("update jenkins job for ", project_name)
             create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            #update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
         else:
           pass
 
@@ -447,6 +461,7 @@ def scrape_consul_for_deploy_jobs_to_remove():
     for x in toplevel_keys_json:
         project_name = x.strip('/')
         deploy_type_url = "http://consul:8500/v1/kv/{}/config/deploy_type?raw".format(project_name)
+        #deploy_type_url = "https://consul.dev.usa.media.reachlocalservices.com/v1/kv/{}/config/deploy_type?raw".format(project_name)
         try:
           response_deploy_type_url = requests.get(deploy_type_url)
         except:
@@ -469,20 +484,25 @@ def scrape_consul_for_deploy_jobs_to_remove():
 
 
 def update_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
-  print("in update_jenkins_job")
+  print("update_jenkins_job()")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
-    print("exception when updating job {}: {}".format(name, ex))
+    print("exception when connecting to jenkins:{} {}".format(name, ex))
     return
+
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
-  server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  try:
+    server.reconfig_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
+  except jenkins.JenkinsException as ex:
+    print("exception updating jenkins job: {} {}".format(name, ex))
+    pass
 
 
 def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   print("updating multibranch jenkins job for {}".format(name))
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when updating multibranch job {}: {}".format(name, ex))
     return
@@ -492,7 +512,7 @@ def update_multibranch_job(name, github_repo, branch, jenkinsfile='Jenkinsfile')
 
 def remove_jenkins_job(project_name):
   print("removing {} job from jenkins".format(project_name))
-  server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+  server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   running_builds = server.get_running_builds()
   print("RUNNING BUILDS: ", running_builds)
   try:
@@ -505,9 +525,9 @@ def remove_jenkins_job(project_name):
 def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   print("in create_jenkins_job")
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
-    print("exception when adding job to jenkins master: {}".format(ex))
+    print("exception when connecting to jenkins master: {} {}".format(name, ex))
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
 
@@ -516,8 +536,10 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     out = server.get_job_config(name)
   except jenkins.NotFoundException as nfe:
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
+    pass
   except Exception as ex:
-    print("exception doing get_job_config({}): {}".format(name, ex))
+    print("generic exception doing get_job_config({}): {}".format(name, ex))
+    pass
 
   if out == None:
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
@@ -526,12 +548,12 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     current_multibranch_jobs('remove', project_name)
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
-    pass
+   update_jenkins_job(name, github_repo,branch,jenkinsfile="Jenkinsfile")
 
 
 def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
-    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='admin')
+    server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
     print("exception when adding job to jenkins master: {}".format(ex))
     return
@@ -543,14 +565,27 @@ def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenk
     job_exists = server.get_job_config(name)
   except jenkins.NotFoundException as nfe:
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
+    pass
   except Exception as ex:
-    print("exception doing get_job_config({}): {}".format(name, ex))
+    print("exception doing multibranch.get_job_config({}): {}".format(name, ex))
+    pass
+
+  already_multibranch = current_multibranch_jobs('check', name)
+  print("ALREADY MULTIBRANCH: {}".format(already_multibranch))
 
   if job_exists == None:
+    print("CREATE JOB")
     server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
     current_multibranch_jobs('add', name)
+  elif job_exists and already_multibranch != 1:
+    server.delete_job(name)
+    server.create_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
+  elif job_exists and already_multibranch == 1:
+    print("RECONFIG JOB")
+    server.reconfig_job(name, MULTIBRANCH_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
     pass
+
 
 
 def main():
@@ -561,6 +596,8 @@ def main():
     scrape_consul_for_docker_engines()
     time.sleep(30)
     scrape_consul_for_deploy_jobs_to_add()
+    time.sleep(30)
+    scrape_consul_for_deploy_jobs_to_remove()
     time.sleep(30)
     scrape_consul_for_deploy_jobs_to_remove()
     time.sleep(30)
