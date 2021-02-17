@@ -432,8 +432,8 @@ def scrape_consul_for_deploy_jobs_to_add():
             create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
           else:
             print("update jenkins job for ", project_name)
-            #create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
-            update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            create_jenkins_job(project_name, github_repo, branch, jenkinsfile)
+            #update_jenkins_job(project_name, github_repo, branch, jenkinsfile)
         else:
           pass
 
@@ -527,7 +527,7 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
   try:
     server = jenkins.Jenkins('http://127.0.0.1:8080', username='admin', password='11fdf46a3db182d421efbf077f7974f3aa')
   except Exception as ex:
-    print("exception when adding job to jenkins master: {}".format(ex))
+    print("exception when connecting to jenkins master: {} {}".format(name, ex))
     return
   BASE_CONFIG_XML_FORMATTED_TEMPLATE = BASE_CONFIG_XML_TEMPLATE.format(REPO_URL=github_repo, BRANCH=branch, JENKINSFILE=jenkinsfile)
 
@@ -538,7 +538,7 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     print("not found exception doing get_job_config({}): {}".format(name, nfe))
     pass
   except Exception as ex:
-    print("exception doing get_job_config({}): {}".format(name, ex))
+    print("generic exception doing get_job_config({}): {}".format(name, ex))
     pass
 
   if out == None:
@@ -548,7 +548,7 @@ def create_jenkins_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
     current_multibranch_jobs('remove', project_name)
     server.create_job(name, BASE_CONFIG_XML_FORMATTED_TEMPLATE)
   else:
-    pass
+   update_jenkins_job(name, github_repo,branch,jenkinsfile="Jenkinsfile")
 
 
 def create_multibranch_pipeline_job(name, github_repo, branch, jenkinsfile='Jenkinsfile'):
