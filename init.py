@@ -145,7 +145,7 @@ MULTIBRANCH_CONFIG_XML_TEMPLATE = '''<?xml version='1.1' encoding='UTF-8'?>
 
 def jenkins_start():
   # startup the jenkins service
-  params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '-Dpermissive-script-security.enabled=true', '-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=300', '/usr/share/jenkins/jenkins.war']
+  params = [ 'java', '-jar', '-Djenkins.install.runSetupWizard=false', '-Dpermissive-script-security.enabled=true', '-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400', '/usr/share/jenkins/jenkins.war']
   jenkins_start = subprocess.Popen(params, stdout=subprocess.PIPE)
 
 
