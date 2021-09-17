@@ -167,7 +167,7 @@ def install_software():
   while i < len(docker_build_plugins_list):
     PLUGIN = docker_build_plugins_list[i]
     print("installing downloaded PLUGIN {}:".format(PLUGIN))
-    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", "file://{}".format(PLUGIN)])
+    subprocess.run(["java", "-jar", "/var/jenkins_home/war/WEB-INF/jenkins-cli.jar", "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400", "-s", "http://127.0.0.1:8080/", "-auth", "admin:11fdf46a3db182d421efbf077f7974f3aa", "install-plugin", "file://{}".format(PLUGIN)])
     i += 1
 
   # install the suggested and desired plugins list
