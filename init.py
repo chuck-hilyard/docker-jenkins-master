@@ -270,7 +270,8 @@ def add_agent_to_master(id, address, port):
     'username': 'jenkins',
     'credentialsId': 'jenkins-credential-id',
     'host': address,
-    'javaPath': '/usr/bin/java'
+    'javaPath': '/usr/bin/java',
+    'jvmOptions': '-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
   }
   try:
     server.create_node(
