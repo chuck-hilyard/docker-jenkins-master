@@ -25,7 +25,7 @@ RUN  apt-get autoremove \
   && apt-get -y install -o APT::Immediate-Configure=0 apt-transport-https python3 python3-pip python3-boto3 vim sudo python3-jenkins 
 RUN pip3 install requests consulate wget
 
-RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh > /tmp/nvm_install.sh; chmod 777 /tmp/nvm_install.sh
 
 COPY --chown=jenkins *.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY --chown=jenkins *.xml /var/jenkins_home/
@@ -43,6 +43,11 @@ COPY users /var/jenkins_home/users
 RUN cd /tmp; git clone --progress --verbose https://github.com/chuck-hilyard/docker-jenkins-master
 RUN chown -R jenkins:jenkins /var/jenkins_home/; chown -R jenkins:jenkins /tmp
 RUN echo "jenkins  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/README
+
+USER jenkins
+RUN /tmp/nvm_install.sh
+RUN echo "source $HOME/.nvm/nvm.sh" >> /var/jenkins_home/.profile
+USER root
 
 COPY init.py /tmp/docker-jenkins-master/init.py
 COPY entrypoint.sh /usr/local/bin/
