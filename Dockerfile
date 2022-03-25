@@ -1,6 +1,7 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
-FROM jenkins/jenkins:lts-jdk8
+#FROM jenkins/jenkins:lts-jdk8
+FROM jenkins/jenkins:2.319.3-lts-jdk8
 
 USER root
 
