@@ -1,13 +1,14 @@
 # this gives you a base jenkins installation configured for our environment
 # the actual jenkins setup/config happens in the init script (see CMD)
-#FROM jenkins/jenkins:lts-jdk8
-FROM jenkins/jenkins:2.319.3-lts-jdk8
+FROM jenkins/jenkins:lts-jdk8
 
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.266/jenkins.war
+
+#RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.266/jenkins.war
+RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.277.1/jenkins.war
 
 # removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
 RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow credentials-binding 
