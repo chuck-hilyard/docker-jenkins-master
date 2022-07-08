@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 
 #RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.266/jenkins.war
-RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.277.1/jenkins.war
+RUN wget -nv -O /usr/share/jenkins/jenkins.war updates.jenkins-ci.org/download/war/2.346.1/jenkins.war
 
 # removed blueocean (many dependencies) as it was breaking the build, moved it to init.py
 RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker-workflow credentials-binding 
